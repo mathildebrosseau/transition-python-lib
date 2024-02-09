@@ -6,6 +6,7 @@ import requests
 def call_api():
     url = 'http://localhost:8080/api/' 
     try:
+        # we could prompt the user for the username and password
         username = 'manel'
         password = 'ThisIsAPassword'
 
@@ -13,13 +14,14 @@ def call_api():
             "usernameOrEmail": username,
             "password": password
         }
+        
         response = requests.get(url, json=body)
         if response.status_code == 200:
-            print("Request successfull:", response.text)
+            return f"Request successfull: {response.text}"
         else:
-            print("Request unsuccessfull:", response.status_code)
-            print(response.text)
+            return f"Request unsuccessfull: {response.status_code} {response.text}"
     except requests.RequestException as e:
-        print("Error:", e)
+        return f"Error: {e}"
+    
 
 call_api()
