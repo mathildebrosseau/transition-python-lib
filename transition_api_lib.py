@@ -14,6 +14,7 @@ config.read('config.ini')
 
 username = config['credentials']['username']
 password = config['credentials']['password']
+token = config['credentials']['token']
 
 url = config['URL']['dev']
 
@@ -22,14 +23,53 @@ body = {
     "password": password
 }
 
+headers = {
+    "Authorization": f"Bearer {token}"
+}
+
+
 def call_api():
     try:
         
         response = requests.post(url, json=body)
         if response.status_code == 200:
+            print(f"Request successfull: {response.text}")
             return f"Request successfull: {response.text}"
             
         else:
+            print(f"Request unsuccessfull: {response.status_code} {response.text}")
+            return f"Request unsuccessfull: {response.status_code} {response.text}"
+    except requests.RequestException as e:
+        return f"Error: {e}"
+    
+def call_api_queries():
+    try:
+        
+        response = requests.post(url+"queries", headers=headers)
+        if response.status_code == 200:
+            print(f"Request successfull: {response.text}")
+            return f"Request successfull: {response.text}"
+            
+        else:
+            print(f"Request unsuccessfull: {response.status_code} {response.text}")
+            return f"Request unsuccessfull: {response.status_code} {response.text}"
+    except requests.RequestException as e:
+        return f"Error: {e}"
+    
+def get_token():
+    try:
+        
+        response = requests.get(url+"token/", json=body)
+        if response.status_code == 200:
+            # Update the token in the config file
+            config['credentials']['token'] = response.text
+            with open('config.ini', 'w') as configfile:
+                config.write(configfile)
+                
+            return f"Request successfull: {response.text}"
+            
+        else:
+            print(f"Request unsuccessfull: {response.status_code} {response.text}")
             return f"Request unsuccessfull: {response.status_code} {response.text}"
     except requests.RequestException as e:
         return f"Error: {e}"
@@ -68,8 +108,8 @@ def get_transition_scenarios():
             return f"Request unsuccessfull: {result.status_code} {result.text}"
     except requests.RequestException as e:
         return f"Error: {e}"
-   
-    
+
+
 def get_transition_routing_modes():
     try:
         result = requests.post(url+"routing-modes", json=body)
@@ -83,3 +123,6 @@ def get_transition_routing_modes():
             return f"Request unsuccessfull: {result.status_code} {result.text}"
     except requests.RequestException as e:
         return f"Error: {e}"
+    
+
+call_api_queries()
