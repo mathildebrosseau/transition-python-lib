@@ -5,37 +5,36 @@ import os
 class Transition:
 
     DEFAULT_URL = "http://localhost:8080/api/"
+    
+    @staticmethod
+    def build_body():
+        username = os.environ.get('TRANSITION_USERNAME')
+        password = os.environ.get('TRANSITION_PASSWORD')
 
-    def __init__(self):
-        self.username = None
-        self.password = None
-        self.token = None
-        self.body = None
-
-    def build_body(self):
-        self.username = os.environ.get('TRANSITION_USERNAME')
-        self.password = os.environ.get('TRANSITION_PASSWORD')
-
-        if self.username is None or self.password is None:
+        if username is None or password is None:
             raise ValueError("Username or password not set.")
         
-        self.body = {
-            "usernameOrEmail": self.username,
-            "password": self.password
+        body = {
+            "usernameOrEmail": username,
+            "password": password
         }
+        return body
 
-    def build_headers(self):
-        self.token = os.environ.get('TRANSITION_TOKEN')
-        if self.token is None:
+    @staticmethod
+    def build_headers():
+        token = os.environ.get('TRANSITION_TOKEN')
+        if token is None:
             raise ValueError("No token found.")
-        self.headers = {
-            "Authorization": f"Bearer {self.token}"
+        headers = {
+            "Authorization": f"Bearer {token}"
         }
+        return headers
 
-    def call_api(self):
+    @staticmethod
+    def call_api():
         try:
-            self.build_body()
-            response = requests.post(self.DEFAULT_URL, json=self.body)
+            body = Transition.build_body()
+            response = requests.post(Transition.DEFAULT_URL, json=body)
             if response.status_code == 200:
                 print(f"Request successfull: {response.text}")
                 return response
@@ -45,10 +44,11 @@ class Transition:
         except requests.RequestException as error:
             return error
 
-    def get_transition_paths(self):
+    @staticmethod
+    def get_transition_paths():
         try:
-            self.build_body()
-            geojson_file = requests.post(f"{self.DEFAULT_URL}paths", json=self.body)
+            body = Transition.build_body()
+            geojson_file = requests.post(f"{Transition.DEFAULT_URL}paths", json=body)
             if geojson_file.status_code == 200:
                 result = geojson.loads(geojson_file.text)
                 return result
@@ -57,10 +57,11 @@ class Transition:
         except requests.RequestException as error:
             return error
         
-    def get_transition_nodes(self):
+    @staticmethod
+    def get_transition_nodes():
         try:
-            self.build_body()
-            geojson_file = requests.post(f"{self.DEFAULT_URL}nodes", json=self.body)
+            body = Transition.build_body()
+            geojson_file = requests.post(f"{Transition.DEFAULT_URL}nodes", json=body)
             if geojson_file.status_code == 200:
                 result = geojson.loads(geojson_file.text)
                 return result
@@ -68,11 +69,12 @@ class Transition:
                 return f"Request unsuccessfull: {geojson_file.status_code} {geojson_file.text}"
         except requests.RequestException as error:
             return error
-        
-    def get_transition_scenarios(self):
+    
+    @staticmethod
+    def get_transition_scenarios():
         try:
-            self.build_body()
-            result = requests.post(f"{self.DEFAULT_URL}scenarios", json=self.body)
+            body = Transition.build_body()
+            result = requests.post(f"{Transition.DEFAULT_URL}scenarios", json=body)
             if result.status_code == 200:
                 scenarios = [entry['name'] for entry in result.json()['collection']]
                 return scenarios
@@ -81,10 +83,11 @@ class Transition:
         except requests.RequestException as error:
             return error
         
-    def get_transition_routing_modes(self):
+    @staticmethod    
+    def get_transition_routing_modes():
         try:
-            self.build_body()
-            result = requests.post(f"{self.DEFAULT_URL}routing-modes", json=self.body)
+            body = Transition.build_body()
+            result = requests.post(f"{Transition.DEFAULT_URL}routing-modes", json=body)
             if result.status_code == 200:
                 # Query returns the list as a string, so we need to parse it.
                 # Can probably be done differently
@@ -99,11 +102,12 @@ class Transition:
     
     # The following methods are not used with the current endpoint implementation,
     # but will be used when tha API is updated to include the token.
-            
-    # def call_api_queries(self):
+
+    # @staticmethod     
+    # def call_api_queries():
     #     try:
-    #         self.build_headers()
-    #         response = requests.post(f"{self.DEFAULT_URL}queries", headers=self.headers)
+    #         headers = Transition.build_headers()
+    #         response = requests.post(f"{Transition.DEFAULT_URL}queries", headers=Transition.headers)
     #         if response.status_code == 200:
     #             print(f"Request successfull: {response.text}")
     #             return f"Request successfull: {response.text}"
@@ -113,9 +117,11 @@ class Transition:
     #     except requests.RequestException as e:
     #         return f"Error: {e}"
         
-    # def get_token(self):
+    # @staticmethod
+    # def get_token():
     #     try:
-    #         response = requests.get(f"{self.DEFAULT_URL}token", json=self.body)
+    #         body = Transition.build_body()
+    #         response = requests.get(f"{Transition.DEFAULT_URL}token", json=body)
     #         if response.status_code == 200:
     #             # Update the token in the config file
     #             config['credentials']['token'] = response.text
