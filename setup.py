@@ -8,8 +8,7 @@ setup(
     author='',
     author_email='',
     packages=['transition_lib'],
-    install_requires=['mpi4py>=2.0',
-                      'numpy',                     
+    install_requires=['requests', 'configparser', 'geojson'                    
                       ],
 
     classifiers=[
