@@ -1,7 +1,7 @@
 """
-pyexample.
+Transition.
 
-An example python library.
+A python package to interact with the Transition API.
 """
 
 __version__ = "0.1.0"

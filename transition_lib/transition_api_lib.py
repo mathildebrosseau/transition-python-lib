@@ -2,11 +2,11 @@ import requests
 import geojson
 import os
 
-class TransitionLib:
+class Transition:
 
     DEFAULT_URL = "http://localhost:8080/api/"
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.username = None
         self.password = None
         self.token = None
@@ -42,48 +42,49 @@ class TransitionLib:
             else:
                 print(f"Request unsuccessfull: {response.status_code} {response.text}")
                 return response
-        except requests.RequestException as e:
-            return e
+        except requests.RequestException as error:
+            return error
 
     def get_transition_paths(self):
         try:
             self.build_body()
-            geojson_file = requests.post(self.DEFAULT_URL+"paths", json=self.body)
+            geojson_file = requests.post(f"{self.DEFAULT_URL}paths", json=self.body)
             if geojson_file.status_code == 200:
                 result = geojson.loads(geojson_file.text)
                 return result
             else:
                 return f"Request unsuccessfull: {geojson_file.status_code} {geojson_file.text}"
-        except requests.RequestException as e:
-            return e
+        except requests.RequestException as error:
+            return error
         
     def get_transition_nodes(self):
         try:
             self.build_body()
-            geojson_file = requests.post(self.DEFAULT_URL+"nodes", json=self.body)
+            geojson_file = requests.post(f"{self.DEFAULT_URL}nodes", json=self.body)
             if geojson_file.status_code == 200:
                 result = geojson.loads(geojson_file.text)
                 return result
             else:
                 return f"Request unsuccessfull: {geojson_file.status_code} {geojson_file.text}"
-        except requests.RequestException as e:
-            return f"Error: {e}"
+        except requests.RequestException as error:
+            return error
         
     def get_transition_scenarios(self):
         try:
             self.build_body()
-            result = requests.post(self.DEFAULT_URL+"scenarios", json=self.body)
+            result = requests.post(f"{self.DEFAULT_URL}scenarios", json=self.body)
             if result.status_code == 200:
-                return result
+                scenarios = [entry['name'] for entry in result.json()['collection']]
+                return scenarios
             else:
                 return f"Request unsuccessfull: {result.status_code} {result.text}"
-        except requests.RequestException as e:
-            return f"Error: {e}"
+        except requests.RequestException as error:
+            return error
         
     def get_transition_routing_modes(self):
         try:
             self.build_body()
-            result = requests.post(self.DEFAULT_URL+"routing-modes", json=self.body)
+            result = requests.post(f"{self.DEFAULT_URL}routing-modes", json=self.body)
             if result.status_code == 200:
                 # Query returns the list as a string, so we need to parse it.
                 # Can probably be done differently
@@ -92,14 +93,17 @@ class TransitionLib:
             else:
                 print(f"Routing modes request unsuccessfull: {result.status_code} {result.text}")
                 return f"Request unsuccessfull: {result.status_code} {result.text}"
-        except requests.RequestException as e:
-            return f"Error: {e}"
+        except requests.RequestException as error:
+            return error
         
+    
+    # The following methods are not used with the current endpoint implementation,
+    # but will be used when tha API is updated to include the token.
             
     # def call_api_queries(self):
     #     try:
     #         self.build_headers()
-    #         response = requests.post(self.DEFAULT_URL+"queries", headers=self.headers)
+    #         response = requests.post(f"{self.DEFAULT_URL}queries", headers=self.headers)
     #         if response.status_code == 200:
     #             print(f"Request successfull: {response.text}")
     #             return f"Request successfull: {response.text}"
@@ -111,7 +115,7 @@ class TransitionLib:
         
     # def get_token(self):
     #     try:
-    #         response = requests.get(self.DEFAULT_URL+"token/", json=self.body)
+    #         response = requests.get(f"{self.DEFAULT_URL}token", json=self.body)
     #         if response.status_code == 200:
     #             # Update the token in the config file
     #             config['credentials']['token'] = response.text
