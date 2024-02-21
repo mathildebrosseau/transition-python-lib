@@ -3,8 +3,8 @@ import geojson
 import os
 
 class Transition:
-    DEFAULT_URL = "http://localhost:8080"
-    API_URL = f"{DEFAULT_URL}/api"
+    BASE_URL = "http://localhost:8080"
+    API_URL = f"{BASE_URL}/api"
     
     @staticmethod
     def build_body():
@@ -38,10 +38,10 @@ class Transition:
             headers = Transition.build_headers()
             response = requests.get(Transition.API_URL, headers=headers)
             if response.status_code == 200:
-                print(f"Request to /api successfull: {response.text}")
+                print(f"Request to /api successfull")
                 return response
             else:
-                print(f"Request to /api unsuccessfull: {response.status_code} {response.text}")
+                print(f"Request to /api unsuccessfull")
                 return response
         except requests.RequestException as error:
             return error
@@ -104,7 +104,7 @@ class Transition:
     def get_token():
         try:
             body = Transition.build_body()
-            response = requests.post(f"{Transition.DEFAULT_URL}/token", json=body)
+            response = requests.post(f"{Transition.BASE_URL}/token", json=body)
             if response.status_code == 200:
                 os.environ['TRANSITION_TOKEN'] = response.text
                 return f"Request to /token successfull: {response.text}"
