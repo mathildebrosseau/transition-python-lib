@@ -8,7 +8,6 @@ setup(
     author='',
     author_email='',
     packages=find_packages(),
-    package_data={'transition_lib': ['config.ini']},
     install_requires=['requests', 'configparser', 'geojson'                    
                       ],
 
