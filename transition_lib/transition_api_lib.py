@@ -3,8 +3,6 @@ import geojson
 import os
 import configparser
 
-
-
 class Transition:
     BASE_URL = "http://localhost:8080"
     API_URL = f"{BASE_URL}/api"
@@ -26,15 +24,14 @@ class Transition:
             config.write(configfile)
     else:
         config.read(config_path)
-
             
     @staticmethod
     def set_credentials(username, password):
         if username is not None and password is not None and username != "" and password != "":
             Transition.config['credentials']['username'] = username
             Transition.config['credentials']['password'] = password
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
         else:
             raise ValueError("Username or password cannot be empty.")
 
@@ -168,3 +165,4 @@ class Transition:
             return response
         except requests.RequestException as error:
             return error
+        
