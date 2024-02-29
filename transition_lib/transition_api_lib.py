@@ -47,8 +47,11 @@ class Transition:
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
-            Transition.BASE_URL = Transition.config['URL'][url]
+            Transition.BASE_URL = url
             Transition.API_URL = f"{Transition.BASE_URL}/api"
+            Transition.config['URL']['current_url'] = url
+            with open(Transition.config_path, 'w') as configfile:
+                Transition.config.write(configfile)
         else:
             raise ValueError("URL cannot be empty.")
         
