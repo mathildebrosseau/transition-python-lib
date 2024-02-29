@@ -1,3 +1,4 @@
+import json
 import requests
 import geojson
 import os
@@ -9,7 +10,7 @@ class Transition:
 
     config = configparser.ConfigParser()
     config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
-    
+
     if not os.path.isfile(config_path):
         config['credentials'] = {
             'username': '',
@@ -24,7 +25,7 @@ class Transition:
             config.write(configfile)
     else:
         config.read(config_path)
-            
+
     @staticmethod
     def set_credentials(username, password):
         if username is not None and password is not None and username != "" and password != "":
@@ -43,7 +44,7 @@ class Transition:
                 Transition.config.write(configfile)
         else:
             raise ValueError("Token cannot be empty.")
-        
+
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
@@ -51,12 +52,12 @@ class Transition:
             Transition.API_URL = f"{Transition.BASE_URL}/api"
         else:
             raise ValueError("URL cannot be empty.")
-        
+
     @staticmethod
     def get_configurations():
         return Transition.config
 
-    
+
     @staticmethod
     def build_body():
         username = Transition.config['credentials']['username']
@@ -64,13 +65,13 @@ class Transition:
 
         if username is None or password is None:
             raise ValueError("Username or password not set.")
-        
+
         body = {
             "usernameOrEmail": username,
             "password": password
         }
 
-        return body            
+        return body
 
     @staticmethod
     def build_headers():
@@ -82,7 +83,7 @@ class Transition:
 
             with open(Transition.config_path, 'w') as configfile:
                 Transition.config.write(configfile)
-        
+
         headers = {
             "Authorization": f"Bearer {token}"
         }
@@ -114,34 +115,37 @@ class Transition:
                 return f"Request to /paths unsuccessfull: {geojson_file.status_code} {geojson_file.text}"
         except requests.RequestException as error:
             return error
-        
+
     @staticmethod
     def get_transition_nodes():
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
             if result.status_code == 200:
+                with open('nodes_result.json', 'w') as file:
+                    file.write(result.text)
                 geojson_file = geojson.loads(result.text)
                 return geojson_file
             else:
                 return f"Request to /nodes unsuccessfull: {result.status_code} {result.text}"
         except requests.RequestException as error:
             return error
-    
+
     @staticmethod
     def get_transition_scenarios():
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
             if result.status_code == 200:
-                scenarios = [entry['name'] for entry in result.json()['collection']]
-                return scenarios
+                # print(result.text)
+                # scenarios = [entry['name'] for entry in result.json()['collection']]
+                return result
             else:
                 return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
         except requests.RequestException as error:
             return error
-        
-    @staticmethod    
+
+    @staticmethod
     def get_transition_routing_modes():
         try:
             headers = Transition.build_headers()
@@ -153,7 +157,7 @@ class Transition:
             return result
         except requests.RequestException as error:
             return error
-        
+
     @staticmethod
     def get_token():
         try:
@@ -165,4 +169,57 @@ class Transition:
             return response
         except requests.RequestException as error:
             return error
-        
+
+    @staticmethod
+    def get_routing_result(modes, 
+                           origin, 
+                           destination, 
+                           scenario_id, 
+                           max_travel_time, 
+                           min_waiting_time,
+                           max_transfer_time, 
+                           max_access_time, 
+                           departure_or_arrival_time, 
+                           departure_or_arrival_label, 
+                           max_first_waiting_time, 
+                           with_geojson):
+        try:
+            origin = origin.split(",")
+            destination = destination.split(",")
+            departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
+            departure_time = departure_or_arrival_time if departure_or_arrival_label == "Departure" else None
+            arrival_time = departure_or_arrival_time if departure_or_arrival_label == "Arrival" else None
+
+            options = {
+                "withGeojson": with_geojson
+            }
+
+            parameters = {
+                "routingModes" : modes,
+                "withAlternatives" : "false",
+                "departureTimeSecondsSinceMidnight" : departure_time,
+                "arrivalTimeSecondsSinceMidnight" : arrival_time,
+                "minWaitingTimeSeconds" : min_waiting_time * 60, 
+                "maxTransferTravelTimeSeconds" : max_transfer_time * 60,
+                "maxAccessEgressTravelTimeSeconds" : max_access_time * 60,
+                "maxFirstWaitingTimeSeconds" : max_first_waiting_time * 60,
+                "maxTotalTravelTimeSeconds" : max_travel_time * 60,
+                "scenarioId" : scenario_id,
+                "originGeojson" : {
+                    "type": "Feature",
+                    "id": 1,
+                    "properties": { "id": 1, "color": "rgba(140, 212, 0, 1.0)", "location": "origin" },
+                    "geometry": { "type": "Point", "coordinates": origin }
+                },
+                "destinationGeojson" : {
+                    "type": "Feature",
+                    "id": 1,
+                    "properties": { "id": 2, "color": "rgba(212, 35, 14, 1.0)", "location": "destination" },
+                    "geometry": { "type": "Point", "coordinates": destination }
+                }
+            }
+            headers = Transition.build_headers()
+            result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=parameters, params=options)
+            return result
+        except requests.RequestException as error:
+            return error
