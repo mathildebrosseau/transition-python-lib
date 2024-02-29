@@ -20,8 +20,8 @@ class Transition:
             'develpment': 'http://localhost:8080',
             'production': ''
         }
-        with open(config_path, 'w') as configfile:
-            config.write(configfile)
+        with open(config_path, 'w') as config_file:
+            config.write(config_file)
     else:
         config.read(config_path)
             
@@ -39,8 +39,8 @@ class Transition:
     def set_token(token):
         if token is not None and token != "":
             Transition.config['credentials']['token'] = token
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
         else:
             raise ValueError("Token cannot be empty.")
         
@@ -50,8 +50,8 @@ class Transition:
             Transition.BASE_URL = url
             Transition.API_URL = f"{Transition.BASE_URL}/api"
             Transition.config['URL']['current_url'] = url
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
         else:
             raise ValueError("URL cannot be empty.")
         
@@ -83,8 +83,8 @@ class Transition:
             token = Transition.get_token().text
             Transition.config['credentials']['token'] = token
 
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
         
         headers = {
             "Authorization": f"Bearer {token}"
