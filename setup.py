@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup,  find_packages
 
 setup(
     name='transition_lib',
@@ -7,7 +7,7 @@ setup(
     url='',
     author='',
     author_email='',
-    packages=['transition_lib'],
+    packages=find_packages(),
     install_requires=['requests', 'configparser', 'geojson'                    
                       ],
 
