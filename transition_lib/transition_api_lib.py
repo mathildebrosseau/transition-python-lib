@@ -17,7 +17,7 @@ class Transition:
             'token': ''
         }
         config['URL'] = {
-            'develpment': 'http://localhost:8080',
+            'development': 'http://localhost:8080',
             'production': ''
         }
         with open(config_path, 'w') as config_file:
@@ -47,11 +47,8 @@ class Transition:
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
-            Transition.BASE_URL = url
+            Transition.BASE_URL = Transition.config['URL'][url]
             Transition.API_URL = f"{Transition.BASE_URL}/api"
-            Transition.config['URL']['current_url'] = url
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
         else:
             raise ValueError("URL cannot be empty.")
         
