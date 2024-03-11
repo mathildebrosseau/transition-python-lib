@@ -17,7 +17,7 @@ class Transition:
             'token': ''
         }
         config['URL'] = {
-            'develpment': 'http://localhost:8080',
+            'development': 'http://localhost:8080',
             'production': ''
         }
         with open(config_path, 'w') as config_file:
