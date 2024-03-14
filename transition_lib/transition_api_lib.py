@@ -136,8 +136,8 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
             if result.status_code == 200:
-                scenarios = [entry['name'] for entry in result.json()['collection']]
-                return scenarios
+                scenarios = [[entry['name'], entry['id']] for entry in result.json()['collection']]
+                return result
             else:
                 return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
         except requests.RequestException as error:
