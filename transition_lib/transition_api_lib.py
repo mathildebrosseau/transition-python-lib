@@ -177,7 +177,7 @@ class Transition:
         try:
             departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
             departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
-            arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
+            arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
 
             parameters = {
                 "departureTimeSecondsSinceMidnight": departure_time_seconds,
@@ -190,7 +190,7 @@ class Transition:
                 "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
                 #"maxWalkingOnlyTravelTimeSeconds": 1800,
                 "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
-                "walkingSpeedMps": walking_speed_kmh * (3600/1000),
+                "walkingSpeedMps": walking_speed_kmh * (1000/3600),
                 "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
                 #"locationColor": "rgba(47, 138, 243, 1.0)",
                 "locationGeojson": {
@@ -216,7 +216,7 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.post(f"{Transition.API_URL}/accessibility/true", headers=headers, json=parameters)
             if result.status_code == 200:
-                geojson_file = geojson.dumps(result.json()['strokes']['features'][0])
+                geojson_file = geojson.dumps(result.json()['polygons'])
                 with open("access.geojson", 'w') as file:
                     file.write(geojson_file)
                 return geojson_file
