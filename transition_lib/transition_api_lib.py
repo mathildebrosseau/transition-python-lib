@@ -135,8 +135,6 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
             if result.status_code == 200:
-                # print(result.text)
-                # scenarios = [entry['name'] for entry in result.json()['collection']]
                 return result
             else:
                 return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
@@ -190,7 +188,7 @@ class Transition:
                 "withGeojson": "true" if with_geojson else "false"
             }
 
-            parameters = {
+            body = {
                 "routingModes" : modes,
                 "withAlternatives" : "false",
                 "departureTimeSecondsSinceMidnight" : departure_time,
@@ -204,18 +202,16 @@ class Transition:
                 "originGeojson" : {
                     "type": "Feature",
                     "id": 1,
-                    "properties": { "id": 1, "color": "rgba(140, 212, 0, 1.0)", "location": "origin" },
                     "geometry": { "type": "Point", "coordinates": origin }
                 },
                 "destinationGeojson" : {
                     "type": "Feature",
                     "id": 1,
-                    "properties": { "id": 2, "color": "rgba(212, 35, 14, 1.0)", "location": "destination" },
                     "geometry": { "type": "Point", "coordinates": destination }
                 }
             }
             headers = Transition.build_headers()
-            result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=parameters, params=options)
+            result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=body, params=options)
             return result
         except requests.RequestException as error:
             return error
