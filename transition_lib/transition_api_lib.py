@@ -182,8 +182,6 @@ class Transition:
                            max_first_waiting_time, 
                            with_geojson):
         try:
-            origin = origin.split(",")
-            destination = destination.split(",")
             departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
             departure_time = departure_or_arrival_time if departure_or_arrival_label == "Departure" else None
             arrival_time = departure_or_arrival_time if departure_or_arrival_label == "Arrival" else None
