@@ -18,14 +18,14 @@ class Transition:
             'token': ''
         }
         config['URL'] = {
-            'develpment': 'http://localhost:8080',
+            'development': 'http://localhost:8080',
             'production': ''
         }
-        with open(config_path, 'w') as configfile:
-            config.write(configfile)
+        with open(config_path, 'w') as config_file:
+            config.write(config_file)
     else:
         config.read(config_path)
-
+            
     @staticmethod
     def set_credentials(username, password):
         if username is not None and password is not None and username != "" and password != "":
@@ -40,11 +40,11 @@ class Transition:
     def set_token(token):
         if token is not None and token != "":
             Transition.config['credentials']['token'] = token
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
         else:
             raise ValueError("Token cannot be empty.")
-
+        
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
@@ -52,12 +52,12 @@ class Transition:
             Transition.API_URL = f"{Transition.BASE_URL}/api"
         else:
             raise ValueError("URL cannot be empty.")
-
+        
     @staticmethod
     def get_configurations():
         return Transition.config
 
-
+    
     @staticmethod
     def build_body():
         username = Transition.config['credentials']['username']
@@ -71,7 +71,7 @@ class Transition:
             "password": password
         }
 
-        return body
+        return body            
 
     @staticmethod
     def build_headers():
@@ -81,9 +81,9 @@ class Transition:
             token = Transition.get_token().text
             Transition.config['credentials']['token'] = token
 
-            with open(Transition.config_path, 'w') as configfile:
-                Transition.config.write(configfile)
-
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
+        
         headers = {
             "Authorization": f"Bearer {token}"
         }
@@ -122,8 +122,6 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
             if result.status_code == 200:
-                with open('nodes_result.json', 'w') as file:
-                    file.write(result.text)
                 geojson_file = geojson.loads(result.text)
                 return geojson_file
             else:
