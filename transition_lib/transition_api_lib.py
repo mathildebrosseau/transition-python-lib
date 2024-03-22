@@ -136,7 +136,6 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
             if result.status_code == 200:
-                scenarios = [[entry['name'], entry['id']] for entry in result.json()['collection']]
                 return result
             else:
                 return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
@@ -157,7 +156,7 @@ class Transition:
             return error
         
     @staticmethod
-    def get_accessibility_map(with_geometry,
+    def get_accessibility_map(with_geojson,
                               departure_or_arrival_choice,
                               departure_or_arrival_time: time,
                               n_polygons,
@@ -179,7 +178,7 @@ class Transition:
             departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
             arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
 
-            parameters = {
+            body = {
                 "departureTimeSecondsSinceMidnight": departure_time_seconds,
                 "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
                 "deltaIntervalSeconds": delta_interval_minutes * 60,
@@ -188,19 +187,11 @@ class Transition:
                 "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
                 "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
                 "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
-                #"maxWalkingOnlyTravelTimeSeconds": 1800,
                 "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
                 "walkingSpeedMps": walking_speed_kmh * (1000/3600),
                 "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
-                #"locationColor": "rgba(47, 138, 243, 1.0)",
                 "locationGeojson": {
                     "type": "Feature",
-                    #"id": 1,
-                    #"properties": {
-                    #"id": 1,
-                    #"color": "rgba(47, 138, 243, 1.0)",
-                    #"location": "accessibilityMapLocation"
-                    #},
                     "geometry": {
                         "type": "Point",
                         "coordinates": [
@@ -211,10 +202,10 @@ class Transition:
                 },
             "scenarioId": scenario_id
             }
-            print(parameters)
 
             headers = Transition.build_headers()
-            result = requests.post(f"{Transition.API_URL}/accessibility/true", headers=headers, json=parameters)
+            params = {'withGeojson': 'true' if with_geojson else 'false'}
+            result = requests.post(f"{Transition.API_URL}/accessibility", headers=headers, json=body, params=params)
             if result.status_code == 200:
                 geojson_file = geojson.dumps(result.json()['polygons'])
                 with open("access.geojson", 'w') as file:
