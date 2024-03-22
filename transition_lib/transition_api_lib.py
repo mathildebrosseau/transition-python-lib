@@ -90,20 +90,7 @@ class Transition:
         return headers
 
     @staticmethod
-    def call_api():
-        try:
-            headers = Transition.build_headers()
-            response = requests.get(Transition.API_URL, headers=headers)
-            if response.status_code == 200:
-                print(f"Request to /api successfull")
-            else:
-                print(f"Request to /api unsuccessfull")
-            return response
-        except requests.RequestException as error:
-            return error
-
-    @staticmethod
-    def get_transition_paths():
+    def get_paths():
         try:
             headers = Transition.build_headers()
             geojson_file = requests.get(f"{Transition.API_URL}/paths", headers=headers)
@@ -116,7 +103,7 @@ class Transition:
             return error
         
     @staticmethod
-    def get_transition_nodes():
+    def get_nodes():
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
@@ -129,7 +116,7 @@ class Transition:
             return error
     
     @staticmethod
-    def get_transition_scenarios():
+    def get_scenarios():
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
@@ -142,7 +129,7 @@ class Transition:
             return error
         
     @staticmethod    
-    def get_transition_routing_modes():
+    def get_routing_modes():
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/routing-modes", headers=headers)
