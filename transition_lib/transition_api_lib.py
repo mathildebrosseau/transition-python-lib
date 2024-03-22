@@ -15,7 +15,6 @@ class Transition:
     if not os.path.isfile(config_path):
         config['credentials'] = {
             'username': '',
-            'password': '',
             'token': ''
         }
         config['URL'] = {
@@ -28,10 +27,9 @@ class Transition:
         config.read(config_path)
             
     @staticmethod
-    def set_credentials(username, password):
-        if username is not None and password is not None and username != "" and password != "":
+    def set_username(username):
+        if username is not None and username != "":
             Transition.config['credentials']['username'] = username
-            Transition.config['credentials']['password'] = password
             with open(Transition.config_path, 'w') as config_file:
                 Transition.config.write(config_file)
         else:
@@ -60,10 +58,7 @@ class Transition:
 
     
     @staticmethod
-    def build_body():
-        username = Transition.config['credentials']['username']
-        password = Transition.config['credentials']['password']
-
+    def build_body(username, password):
         if username is None or password is None:
             raise ValueError("Username or password not set.")
         
@@ -216,13 +211,15 @@ class Transition:
             return error
         
     @staticmethod
-    def get_token():
+    def get_token(username, password):
         try:
-            body = Transition.build_body()
+            body = Transition.build_body(username, password)
             response = requests.post(f"{Transition.BASE_URL}/token", json=body)
-            print(response.text)
             if response.status_code == 200:
-                os.environ['TRANSITION_TOKEN'] = response.text
+                Transition.config['credentials']['token'] = response.text
+
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
             return response
         except requests.RequestException as error:
             return error
