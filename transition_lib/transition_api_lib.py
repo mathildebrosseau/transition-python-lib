@@ -92,12 +92,9 @@ class Transition:
     def get_paths():
         try:
             headers = Transition.build_headers()
-            geojson_file = requests.get(f"{Transition.API_URL}/paths", headers=headers)
-            if geojson_file.status_code == 200:
-                result = geojson.loads(geojson_file.text)
-                return result
-            else:
-                return f"Request to /paths unsuccessfull: {geojson_file.status_code} {geojson_file.text}"
+            result = requests.get(f"{Transition.API_URL}/paths", headers=headers)
+            result.raise_for_status()
+            return result.json()
         except requests.RequestException as error:
             return error
         
@@ -106,11 +103,8 @@ class Transition:
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
-            if result.status_code == 200:
-                geojson_file = geojson.loads(result.text)
-                return geojson_file
-            else:
-                return f"Request to /nodes unsuccessfull: {result.status_code} {result.text}"
+            result.raise_for_status()
+            return result.json()
         except requests.RequestException as error:
             return error
     
@@ -119,11 +113,8 @@ class Transition:
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
-            if result.status_code == 200:
-                scenarios = [entry['name'] for entry in result.json()['collection']]
-                return scenarios
-            else:
-                return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
+            result.raise_for_status()
+            return result.json()
         except requests.RequestException as error:
             return error
         
@@ -132,9 +123,8 @@ class Transition:
         try:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/routing-modes", headers=headers)
+            result.raise_for_status()
             if result.status_code == 200:
-                # Query returns the list as a string, so we need to parse it.
-                # Can probably be done differently
                 result = [x.replace("[", "").replace("]", "").replace('"', "") for x in result.text.split(",")]
             return result
         except requests.RequestException as error:
