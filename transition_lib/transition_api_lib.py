@@ -55,7 +55,6 @@ class Transition:
     @staticmethod
     def get_configurations():
         return Transition.config
-
     
     @staticmethod
     def build_body():
