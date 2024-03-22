@@ -3,6 +3,8 @@ import geojson
 import os
 import configparser
 
+from datetime import time
+
 class Transition:
     BASE_URL = "http://localhost:8080"
     API_URL = f"{BASE_URL}/api"
@@ -129,8 +131,7 @@ class Transition:
             headers = Transition.build_headers()
             result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
             if result.status_code == 200:
-                scenarios = [entry['name'] for entry in result.json()['collection']]
-                return scenarios
+                return result
             else:
                 return f"Request to /scenarios unsuccessfull: {result.status_code} {result.text}"
         except requests.RequestException as error:
@@ -150,6 +151,66 @@ class Transition:
             return error
         
     @staticmethod
+    def get_accessibility_map(with_geojson,
+                              departure_or_arrival_choice,
+                              departure_or_arrival_time: time,
+                              n_polygons,
+                              delta_minutes,
+                              delta_interval_minutes,
+                              scenario_id, 
+                              place_name,
+                              max_total_travel_time_minutes,
+                              min_waiting_time_minutes,
+                              max_access_egress_travel_time_minutes,
+                              max_transfer_travel_time_minutes,
+                              max_first_waiting_time_minutes,
+                              walking_speed_kmh,
+                              coord_latitude,
+                              coord_longitude
+                              ):
+        try:
+            departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
+            departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
+            arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
+
+            body = {
+                "departureTimeSecondsSinceMidnight": departure_time_seconds,
+                "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
+                "deltaIntervalSeconds": delta_interval_minutes * 60,
+                "deltaSeconds": delta_minutes * 60,
+                "numberOfPolygons": n_polygons,
+                "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
+                "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
+                "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
+                "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
+                "walkingSpeedMps": walking_speed_kmh * (1000/3600),
+                "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
+                "locationGeojson": {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            coord_longitude,
+                            coord_latitude
+                        ]
+                    }
+                },
+            "scenarioId": scenario_id
+            }
+
+            headers = Transition.build_headers()
+            params = {'withGeojson': 'true' if with_geojson else 'false'}
+            result = requests.post(f"{Transition.API_URL}/accessibility", headers=headers, json=body, params=params)
+            if result.status_code == 200:
+                geojson_file = geojson.dumps(result.json()['polygons'])
+                with open("access.geojson", 'w') as file:
+                    file.write(geojson_file)
+                return geojson_file
+            return result
+        except requests.RequestException as error:
+            return error
+        
+    @staticmethod
     def get_token(username, password):
         try:
             body = Transition.build_body(username, password)
@@ -162,4 +223,5 @@ class Transition:
             return response
         except requests.RequestException as error:
             return error
+
         
