@@ -187,7 +187,7 @@ class Transition:
             arrival_time = departure_or_arrival_time if departure_or_arrival_label == "Arrival" else None
 
             options = {
-                "withGeojson": with_geojson
+                "withGeojson": "true" if with_geojson else "false"
             }
 
             parameters = {
