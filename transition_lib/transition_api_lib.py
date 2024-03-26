@@ -36,16 +36,10 @@ class Transition:
                 Transition.config.write(config_file)
         else:
             raise ValueError("Username cannot be empty.")
-
-    @staticmethod
-    def set_token(token):
-        if token is not None and token != "":
-            Transition.config['credentials']['token'] = token
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
-        else:
-            raise ValueError("Token cannot be empty.")
-        
+    
+    def get_username():
+        return Transition.config['credentials']['username']
+            
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
@@ -57,10 +51,33 @@ class Transition:
                 Transition.config.write(config_file)
         else:
             raise ValueError("URL cannot be empty.")
+    
+    def get_url():
+        return Transition.BASE_URL
+
+    @staticmethod
+    def set_token(token):
+        if token is not None and token != "":
+            Transition.config['credentials']['token'] = token
+            with open(Transition.config_path, 'w') as config_file:
+                Transition.config.write(config_file)
+        else:
+            raise ValueError("Token cannot be empty.")
         
     @staticmethod
     def get_configurations():
         return Transition.config
+    
+    def clear_configurations():
+        Transition.config['credentials'] = {
+            'username': '',
+            'token': ''
+        }
+        Transition.config['URL'] = {
+            'base_url': ''
+        }
+        with open(Transition.config_path, 'w') as config_file:
+            Transition.config.write(config_file)
     
     @staticmethod
     def build_body(username, password):
