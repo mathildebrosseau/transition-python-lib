@@ -103,7 +103,7 @@ This method allows to send accessibility map parameters to the Transition server
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;If True, the returned JSON file will contain geometry information for the strokes and polygons of the accessibility map.
 
 **Returns :**&emsp;&emsp;&ensp;***result*** : *JSON*
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;Accessinility map information in JSON format.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;Accessibility map information in JSON format.\
 
 **Raises :**&emsp;**&emsp;**&emsp;***RequestException***\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
