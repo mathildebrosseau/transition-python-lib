@@ -7,7 +7,7 @@ description = (HERE / "README.md").read_text()
 setup(
     name='transition_lib',
     version='0.1.0',    
-    description='',
+    description=description,
     packages=find_packages(),
     install_requires=['requests', 'configparser', 'geojson'                    
                       ],
