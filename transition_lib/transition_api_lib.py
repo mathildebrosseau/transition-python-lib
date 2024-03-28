@@ -106,59 +106,44 @@ class Transition:
     
     @staticmethod
     def get_token(username, password):
-        try:
-            body = Transition.build_body(username, password)
-            response = requests.post(f"{Transition.BASE_URL}/token", json=body)
-            if response.status_code == 200:
-                Transition.config['credentials']['token'] = response.text
+        body = Transition.build_body(username, password)
+        response = requests.post(f"{Transition.BASE_URL}/token", json=body)
+        if response.status_code == 200:
+            Transition.config['credentials']['token'] = response.text
 
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
+        with open(Transition.config_path, 'w') as config_file:
+            Transition.config.write(config_file)
 
-            return response.text
-        except requests.RequestException as error:
-            return error
+        return response.text
 
     @staticmethod
     def get_paths():
-        try:
-            headers = Transition.build_headers()
-            result = requests.get(f"{Transition.API_URL}/paths", headers=headers)
-            result.raise_for_status()
-            return result.json()
-        except requests.RequestException as error:
-            return error
+        headers = Transition.build_headers()
+        result = requests.get(f"{Transition.API_URL}/paths", headers=headers)
+        result.raise_for_status()
+        return result.json()
 
     @staticmethod
     def get_nodes():
-        try:
-            headers = Transition.build_headers()
-            result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
-            result.raise_for_status()
-            return result.json()
-        except requests.RequestException as error:
-            return error
+        headers = Transition.build_headers()
+        result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
+        result.raise_for_status()
+        return result.json()
 
     @staticmethod
     def get_scenarios():
-        try:
-            headers = Transition.build_headers()
-            result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
-            result.raise_for_status()
-            return result
-        except requests.RequestException as error:
-            return error
+        headers = Transition.build_headers()
+        result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
+        result.raise_for_status()
+        return result
         
     @staticmethod    
     def get_routing_modes():
-        try:
-            headers = Transition.build_headers()
-            result = requests.get(f"{Transition.API_URL}/routing-modes", headers=headers)
-            result.raise_for_status()
-            result = [x.replace("[", "").replace("]", "").replace('"', "") for x in result.text.split(",")]
-            return result
-        except requests.RequestException as error:
-            return error
+        headers = Transition.build_headers()
+        result = requests.get(f"{Transition.API_URL}/routing-modes", headers=headers)
+        result.raise_for_status()
+        result = [x.replace("[", "").replace("]", "").replace('"', "") for x in result.text.split(",")]
+        return result
 
     @staticmethod
     def get_accessibility_map(coord_latitude,
@@ -178,43 +163,40 @@ class Transition:
                               walking_speed_kmh,
                               with_geojson
                               ):
-        try:
-            departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
-            departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
-            arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
+        departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
+        departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
+        arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
 
-            body = {
-                "departureTimeSecondsSinceMidnight": departure_time_seconds,
-                "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
-                "deltaIntervalSeconds": delta_interval_minutes * 60,
-                "deltaSeconds": delta_minutes * 60,
-                "numberOfPolygons": n_polygons,
-                "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
-                "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
-                "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
-                "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
-                "walkingSpeedMps": walking_speed_kmh * (1000/3600),
-                "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
-                "locationGeojson": {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            coord_longitude,
-                            coord_latitude
-                        ]
-                    }
-                },
-            "scenarioId": scenario_id
-            }
+        body = {
+            "departureTimeSecondsSinceMidnight": departure_time_seconds,
+            "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
+            "deltaIntervalSeconds": delta_interval_minutes * 60,
+            "deltaSeconds": delta_minutes * 60,
+            "numberOfPolygons": n_polygons,
+            "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
+            "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
+            "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
+            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
+            "walkingSpeedMps": walking_speed_kmh * (1000/3600),
+            "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
+            "locationGeojson": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        coord_longitude,
+                        coord_latitude
+                    ]
+                }
+            },
+        "scenarioId": scenario_id
+        }
 
-            headers = Transition.build_headers()
-            params = {'withGeojson': 'true' if with_geojson else 'false'}
-            result = requests.post(f"{Transition.API_URL}/accessibility", headers=headers, json=body, params=params)
-            result.raise_for_status()
-            return result.json()
-        except requests.RequestException as error:
-            return error
+        headers = Transition.build_headers()
+        params = {'withGeojson': 'true' if with_geojson else 'false'}
+        result = requests.post(f"{Transition.API_URL}/accessibility", headers=headers, json=body, params=params)
+        result.raise_for_status()
+        return result.json()
 
     @staticmethod
     def get_routing_result(modes, 
@@ -229,38 +211,35 @@ class Transition:
                            max_access_time, 
                            max_first_waiting_time, 
                            with_geojson=True):
-        try:
-            departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
-            departure_time = departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
-            arrival_time = departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
+        departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
+        departure_time = departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
+        arrival_time = departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
 
-            body = {
-                "routingModes" : modes,
-                "withAlternatives" : "false",
-                "departureTimeSecondsSinceMidnight" : departure_time,
-                "arrivalTimeSecondsSinceMidnight" : arrival_time,
-                "minWaitingTimeSeconds" : min_waiting_time * 60, 
-                "maxTransferTravelTimeSeconds" : max_transfer_time * 60,
-                "maxAccessEgressTravelTimeSeconds" : max_access_time * 60,
-                "maxFirstWaitingTimeSeconds" : max_first_waiting_time * 60,
-                "maxTotalTravelTimeSeconds" : max_travel_time * 60,
-                "scenarioId" : scenario_id,
-                "originGeojson" : {
-                    "type": "Feature",
-                    "id": 1,
-                    "geometry": { "type": "Point", "coordinates": origin }
-                },
-                "destinationGeojson" : {
-                    "type": "Feature",
-                    "id": 1,
-                    "geometry": { "type": "Point", "coordinates": destination }
-                }
+        body = {
+            "routingModes" : modes,
+            "withAlternatives" : "false",
+            "departureTimeSecondsSinceMidnight" : departure_time,
+            "arrivalTimeSecondsSinceMidnight" : arrival_time,
+            "minWaitingTimeSeconds" : min_waiting_time * 60, 
+            "maxTransferTravelTimeSeconds" : max_transfer_time * 60,
+            "maxAccessEgressTravelTimeSeconds" : max_access_time * 60,
+            "maxFirstWaitingTimeSeconds" : max_first_waiting_time * 60,
+            "maxTotalTravelTimeSeconds" : max_travel_time * 60,
+            "scenarioId" : scenario_id,
+            "originGeojson" : {
+                "type": "Feature",
+                "id": 1,
+                "geometry": { "type": "Point", "coordinates": origin }
+            },
+            "destinationGeojson" : {
+                "type": "Feature",
+                "id": 1,
+                "geometry": { "type": "Point", "coordinates": destination }
             }
-            headers = Transition.build_headers()
-            params = {"withGeojson": "true" if with_geojson else "false"}
-            result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=body, params=params)
-            result.raise_for_status()
-            return result.json()
-        except requests.RequestException as error:
-            return error
+        }
+        headers = Transition.build_headers()
+        params = {"withGeojson": "true" if with_geojson else "false"}
+        result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=body, params=params)
+        result.raise_for_status()
+        return result.json()
         
