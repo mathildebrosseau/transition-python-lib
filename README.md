@@ -9,7 +9,7 @@ To install Transition, use the following command :
 ```
 After installing Transition, it may be imported into Python code like :
 ```python
-import Transition
+from transition_lib.transition import Transition
 ```
 ## Usage
 All methods in Transition are static methods. It provides the following :

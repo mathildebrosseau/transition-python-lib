@@ -1,20 +1,20 @@
-from setuptools import setup,  find_packages
-from pathlib import Path
+from setuptools import setup, find_packages
 
-# The directory containing this file
-HERE = Path(__file__).parent
-description = (HERE / "README.md").read_text()
 setup(
+    name='transition-lib-test',
     name='transition_lib',
     version='0.1.0',    
     description=description,
+    description='A Python package to interact with the Transition API.',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    author='Mathilde',
     packages=find_packages(),
-    install_requires=['requests', 'configparser', 'geojson'                    
-                      ],
-
+    install_requires=['requests', 'geojson'],
+    python_requires='>=3.6',
     classifiers=[
         'License :: OSI Approved :: MIT License',  
-        'Operating System :: Linux', 
+        'Operating System :: OS Independent', 
         'Programming Language :: Python :: 3',
     ],
 )
