@@ -9,8 +9,7 @@ setup(
     version='0.1.0',    
     description=description,
     packages=find_packages(),
-    install_requires=['requests', 'configparser', 'geojson'                    
-                      ],
+    install_requires=['requests'],
 
     classifiers=[
         'License :: OSI Approved :: MIT License',  
