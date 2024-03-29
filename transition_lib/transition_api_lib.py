@@ -2,82 +2,27 @@ import json
 import requests
 import geojson
 import os
-import configparser
 from datetime import time
 
 class Transition:
     BASE_URL = ""
     API_URL = ""
+    TOKEN = ""
 
-    config = configparser.ConfigParser()
-    config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
-
-    if not os.path.isfile(config_path):
-        config['credentials'] = {
-            'username': '',
-            'token': ''
-        }
-        config['URL'] = {
-            'base_url': ''
-        }
-        with open(config_path, 'w') as config_file:
-            config.write(config_file)
-    else:
-        config.read(config_path)
-
-    BASE_URL = config['URL']['base_url']
-    API_URL = f"{BASE_URL}/api" 
-            
     @staticmethod
-    def set_username(username):
-        if username is not None and username != "":
-            Transition.config['credentials']['username'] = username
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
+    def set_token(token):
+        if token is not None and token != "":
+            Transition.TOKEN = token            
         else:
-            raise ValueError("Username cannot be empty.")
-    
-    def get_username():
-        return Transition.config['credentials']['username']
-            
+            raise ValueError("Token cannot be empty.")
+        
     @staticmethod
     def set_url(url):
         if url is not None and url != "":
             Transition.BASE_URL = url
             Transition.API_URL = f"{Transition.BASE_URL}/api"
-
-            Transition.config['URL']['base_url'] = url
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
         else:
             raise ValueError("URL cannot be empty.")
-    
-    def get_url():
-        return Transition.BASE_URL
-
-    @staticmethod
-    def set_token(token):
-        if token is not None and token != "":
-            Transition.config['credentials']['token'] = token
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
-        else:
-            raise ValueError("Token cannot be empty.")
-        
-    @staticmethod
-    def get_configurations():
-        return Transition.config
-    
-    def clear_configurations():
-        Transition.config['credentials'] = {
-            'username': '',
-            'token': ''
-        }
-        Transition.config['URL'] = {
-            'base_url': ''
-        }
-        with open(Transition.config_path, 'w') as config_file:
-            Transition.config.write(config_file)
     
     @staticmethod
     def build_body(username, password):
@@ -92,9 +37,8 @@ class Transition:
         return body            
 
     @staticmethod
-    def build_headers():
-        token = Transition.config['credentials']['token']
-
+    def build_headers(token=None):
+        token = Transition.TOKEN if token is None else token
         if token is None or token == "":
             raise ValueError("Token not set.")
         
@@ -105,45 +49,50 @@ class Transition:
         return headers
     
     @staticmethod
-    def get_token(username, password):
+    def get_token(username, password,url=None):
+        url = Transition.BASE_URL if url is None else url
         body = Transition.build_body(username, password)
-        response = requests.post(f"{Transition.BASE_URL}/token", json=body)
-        if response.status_code == 200:
-            Transition.config['credentials']['token'] = response.text
-
-        with open(Transition.config_path, 'w') as config_file:
-            Transition.config.write(config_file)
-
+        response = requests.post(f"{url}/token", json=body)
+        response.raise_for_status()
         return response.text
 
     @staticmethod
-    def get_paths():
-        headers = Transition.build_headers()
-        result = requests.get(f"{Transition.API_URL}/paths", headers=headers)
-        result.raise_for_status()
-        return result.json()
+    def get_paths(url=None, token=None):
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token            
+        headers = Transition.build_headers(token)
+        response = requests.get(f"{url}/paths", headers=headers)
+        response.raise_for_status()
+        return response.json()
 
     @staticmethod
-    def get_nodes():
-        headers = Transition.build_headers()
-        result = requests.get(f"{Transition.API_URL}/nodes", headers=headers)
-        result.raise_for_status()
-        return result.json()
+    def get_nodes(url=None, token=None):
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        headers = Transition.build_headers(token)
+        response = requests.get(f"{url}/nodes", headers=headers)
+        response.raise_for_status()
+        return response.json()
 
     @staticmethod
-    def get_scenarios():
-        headers = Transition.build_headers()
-        result = requests.get(f"{Transition.API_URL}/scenarios", headers=headers)
-        result.raise_for_status()
-        return result
+    def get_scenarios(url=None, token=None):
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        headers = Transition.build_headers(token)
+        response = requests.get(f"{url}/scenarios", headers=headers)
+        response.raise_for_status()
+        return response
         
     @staticmethod    
-    def get_routing_modes():
-        headers = Transition.build_headers()
-        result = requests.get(f"{Transition.API_URL}/routing-modes", headers=headers)
-        result.raise_for_status()
-        result = [x.replace("[", "").replace("]", "").replace('"', "") for x in result.text.split(",")]
-        return result
+    def get_routing_modes(url=None, token=None):
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        print(f"getting routing modes from {url} with token {token}")
+        headers = Transition.build_headers(token)
+        response = requests.get(f"{url}/routing-modes", headers=headers)
+        response.raise_for_status()
+        response = [x.replace("[", "").replace("]", "").replace('"', "") for x in response.text.split(",")]
+        return response
 
     @staticmethod
     def get_accessibility_map(coord_latitude,
@@ -161,7 +110,9 @@ class Transition:
                               max_transfer_travel_time_minutes,
                               max_first_waiting_time_minutes,
                               walking_speed_kmh,
-                              with_geojson
+                              with_geojson,
+                              url=None, 
+                              token=None
                               ):
         departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
         departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
@@ -192,11 +143,13 @@ class Transition:
         "scenarioId": scenario_id
         }
 
-        headers = Transition.build_headers()
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        headers = Transition.build_headers(token)
         params = {'withGeojson': 'true' if with_geojson else 'false'}
-        result = requests.post(f"{Transition.API_URL}/accessibility", headers=headers, json=body, params=params)
-        result.raise_for_status()
-        return result.json()
+        response = requests.post(f"{url}/accessibility", headers=headers, json=body, params=params)
+        response.raise_for_status()
+        return response.json()
 
     @staticmethod
     def get_routing_result(modes, 
@@ -210,7 +163,9 @@ class Transition:
                            max_transfer_time, 
                            max_access_time, 
                            max_first_waiting_time, 
-                           with_geojson=True):
+                           with_geojson,
+                           url=None,
+                           token=None):
         departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
         departure_time = departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
         arrival_time = departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
@@ -237,9 +192,12 @@ class Transition:
                 "geometry": { "type": "Point", "coordinates": destination }
             }
         }
-        headers = Transition.build_headers()
+        
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        headers = Transition.build_headers(token)
         params = {"withGeojson": "true" if with_geojson else "false"}
-        result = requests.post(f"{Transition.API_URL}/route", headers=headers, json=body, params=params)
-        result.raise_for_status()
-        return result.json()
+        response = requests.post(f"{url}/route", headers=headers, json=body, params=params)
+        response.raise_for_status()
+        return response.json()
         
