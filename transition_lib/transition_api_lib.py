@@ -24,6 +24,17 @@ class Transition:
         else:
             raise ValueError("URL cannot be empty.")
     
+    def clear_configurations():
+        Transition.config['credentials'] = {
+            'username': '',
+            'token': ''
+        }
+        Transition.config['URL'] = {
+            'base_url': ''
+        }
+        with open(Transition.config_path, 'w') as config_file:
+            Transition.config.write(config_file)
+    
     @staticmethod
     def build_body(username, password):
         if username is None or password is None:
