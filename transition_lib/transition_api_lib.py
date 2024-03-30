@@ -7,6 +7,12 @@ class Transition:
     TOKEN = ""
 
     @staticmethod
+    def _set_parameters(url, token):
+        url = Transition.API_URL if url is None else url
+        token = Transition.TOKEN if token is None else token
+        return url, token
+
+    @staticmethod
     def set_token(token):
         if token is not None and token != "":
             Transition.TOKEN = token            
@@ -46,7 +52,7 @@ class Transition:
         return headers
     
     @staticmethod
-    def get_token(username, password,url=None):
+    def request_token(username, password,url=None):
         url = Transition.BASE_URL if url is None else url
         body = Transition.build_body(username, password)
         response = requests.post(f"{url}/token", json=body)
@@ -55,8 +61,7 @@ class Transition:
 
     @staticmethod
     def get_paths(url=None, token=None):
-        url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token            
+        url, token = Transition._set_parameters(url, token)           
         headers = Transition.build_headers(token)
         response = requests.get(f"{url}/paths", headers=headers)
         response.raise_for_status()
@@ -64,8 +69,7 @@ class Transition:
 
     @staticmethod
     def get_nodes(url=None, token=None):
-        url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
+        url, token = Transition._set_parameters(url, token)
         headers = Transition.build_headers(token)
         response = requests.get(f"{url}/nodes", headers=headers)
         response.raise_for_status()
@@ -73,8 +77,7 @@ class Transition:
 
     @staticmethod
     def get_scenarios(url=None, token=None):
-        url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
+        url, token = Transition._set_parameters(url, token)
         headers = Transition.build_headers(token)
         response = requests.get(f"{url}/scenarios", headers=headers)
         response.raise_for_status()
@@ -82,8 +85,7 @@ class Transition:
         
     @staticmethod    
     def get_routing_modes(url=None, token=None):
-        url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
+        url, token = Transition._set_parameters(url, token)
         print(f"getting routing modes from {url} with token {token}")
         headers = Transition.build_headers(token)
         response = requests.get(f"{url}/routing-modes", headers=headers)
@@ -92,7 +94,7 @@ class Transition:
         return response
 
     @staticmethod
-    def get_accessibility_map(coord_latitude,
+    def request_accessibility_map(coord_latitude,
                               coord_longitude,
                               scenario_id, 
                               departure_or_arrival_choice,
@@ -141,7 +143,6 @@ class Transition:
         }
 
         url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
         headers = Transition.build_headers(token)
         params = {'withGeojson': 'true' if with_geojson else 'false'}
         response = requests.post(f"{url}/accessibility", headers=headers, json=body, params=params)
@@ -149,7 +150,7 @@ class Transition:
         return response.json()
 
     @staticmethod
-    def get_routing_result(modes, 
+    def request_routing_result(modes, 
                            origin, 
                            destination, 
                            scenario_id, 
@@ -190,8 +191,7 @@ class Transition:
             }
         }
         
-        url = Transition.API_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
+        url, token = Transition._set_parameters(url, token)
         headers = Transition.build_headers(token)
         params = {"withGeojson": "true" if with_geojson else "false"}
         response = requests.post(f"{url}/route", headers=headers, json=body, params=params)
