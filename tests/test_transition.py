@@ -60,6 +60,8 @@ class TestTransition(unittest.TestCase):
             }
         }
         self.test_options = { "withGeojson": "true" }
+        Transition.set_url(self.test_url)
+        Transition.set_token(self.test_token)
 
     def test_set_token(self):
         Transition.set_token(self.test_token)
@@ -87,19 +89,20 @@ class TestTransition(unittest.TestCase):
         self.assertEqual(headers, {"Authorization": f"Bearer {self.test_token}"})
 
     def test_build_headers_empty(self):
+        Transition.TOKEN = None
         self.assertRaises(ValueError, Transition.build_headers, None)
 
-    def test_get_token(self):
+    def test_request_token(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/token', text=self.test_token, status_code=200)
             response = requests.post(f'{self.test_url}/token', json={"usernameOrEmail": self.test_username, "password": self.test_password})
-            res = Transition.get_token(self.test_username, self.test_password, self.test_url)
+            res = Transition.request_token(self.test_username, self.test_password, self.test_url)
             self.assertTrue(m.called)
             self.assertEqual(res, self.test_token)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.text, res)
 
-    def test_get_token_error(self):
+    def test_request_token_error(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/token', text=self.test_token, status_code=400)
             response = requests.post(f'{self.test_url}/token', json={"usernameOrEmail": None, "password": None})
@@ -111,8 +114,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/paths', json={"key" : "value"}, status_code=200)
             response = requests.get(f'{self.test_url}/api/paths', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             Transition.get_paths()
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
@@ -122,8 +123,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/paths', json={"key" : "value"}, status_code=400)
             response = requests.get(f'{self.test_url}/api/paths', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             self.assertRaises(requests.exceptions.HTTPError, Transition.get_paths)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
@@ -132,8 +131,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/nodes',json={"key" : "value"}, status_code=200)
             response = requests.get(f'{self.test_url}/api/nodes', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             Transition.get_nodes()
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
@@ -143,8 +140,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/nodes',json={"key" : "value"}, status_code=400)
             response = requests.get(f'{self.test_url}/api/nodes', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             self.assertRaises(requests.exceptions.HTTPError, Transition.get_nodes)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
@@ -153,8 +148,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/scenarios', status_code=200)
             response = requests.get(f'{self.test_url}/api/scenarios', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             Transition.get_scenarios()
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
@@ -164,8 +157,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/scenarios', status_code=400)
             response = requests.get(f'{self.test_url}/api/scenarios', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             self.assertRaises(requests.exceptions.HTTPError, Transition.get_scenarios)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
@@ -174,8 +165,6 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/routing-modes', text='["mode1","mode2"]', status_code=200)
             response = requests.get(f'{self.test_url}/api/routing-modes', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             modes = Transition.get_routing_modes()
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
@@ -185,61 +174,51 @@ class TestTransition(unittest.TestCase):
         with requests_mock.Mocker() as m:
             m.get(f'{self.test_url}/api/routing-modes', text='["mode1","mode2"]', status_code=400)
             response = requests.get(f'{self.test_url}/api/routing-modes', headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             self.assertRaises(requests.exceptions.HTTPError, Transition.get_routing_modes)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
 
-    def test_get_accessibility_map(self):
+    def test_request_accessibility_map(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/api/accessibility',json={"key" : "value"}, status_code=200)
             response = requests.post(f'{self.test_url}/api/accessibility', json=self.test_accessibility_params, params=self.test_options, headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             departure_time = time(0, 0, 0)
-            Transition.get_accessibility_map(0, 0, "scenario-id", 'Departure', departure_time, 1, 1, 1, 'place', 1, 1, 1, 1, 1, 1, True)
+            Transition.request_accessibility_map(0, 0, "scenario-id", 'Departure', departure_time, 1, 1, 1, 'place', 1, 1, 1, 1, 1, 1, True)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json(), {"key" : "value"})
             self.assertEqual(m.last_request.json(), self.test_accessibility_params)
             self.assertEqual(m.last_request.headers['Authorization'], f"Bearer {self.test_token}")
 
-    def test_get_accessibility_map_error(self):
+    def test_request_accessibility_map_error(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/api/accessibility',json={"key" : "value"}, status_code=400)
             response = requests.post(f'{self.test_url}/api/accessibility', json=self.test_accessibility_params, params=self.test_options, headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             departure_time = time(0, 0, 0)
-            self.assertRaises(requests.exceptions.HTTPError, Transition.get_accessibility_map, 0, 0, "scenario-id", 'Departure', departure_time, 1, 1, 1, 'place', 1, 1, 1, 1, 1, 1, True)
+            self.assertRaises(requests.exceptions.HTTPError, Transition.request_accessibility_map, 0, 0, "scenario-id", 'Departure', departure_time, 1, 1, 1, 'place', 1, 1, 1, 1, 1, 1, True)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(m.last_request.json(), self.test_accessibility_params)
             self.assertEqual(m.last_request.headers['Authorization'], f"Bearer {self.test_token}")
 
-    def test_get_routing_result(self):
+    def test_request_routing_result(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/api/route', json={"key" : "value"}, status_code=200)
             response = requests.post(f'{self.test_url}/api/route', json=self.test_route_params, params=self.test_options, headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             departure_time = time(0, 0, 0)
-            Transition.get_routing_result(["mode1", "mode2"], [0, 0], [0, 0], "scenario-id", 'Departure', departure_time, 1, 1, 1, 1, 1, True)
+            Transition.request_routing_result(["mode1", "mode2"], [0, 0], [0, 0], "scenario-id", 'Departure', departure_time, 1, 1, 1, 1, 1, True)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json(), {"key" : "value"})
             self.assertEqual(m.last_request.json(), self.test_route_params)
             self.assertEqual(m.last_request.headers['Authorization'], f"Bearer {self.test_token}")
 
-    def test_get_routing_result_error(self):
+    def test_request_routing_result_error(self):
         with requests_mock.Mocker() as m:
             m.post(f'{self.test_url}/api/route', json={"key" : "value"}, status_code=400)
             response = requests.post(f'{self.test_url}/api/route', json=self.test_route_params, params=self.test_options, headers={"Authorization": f"Bearer {self.test_token}"})
-            Transition.set_url(self.test_url)
-            Transition.set_token(self.test_token)
             departure_time = time(0, 0, 0)
-            self.assertRaises(requests.exceptions.HTTPError, Transition.get_routing_result, ["mode1", "mode2"], [0, 0], [0, 0], "scenario-id", 'Departure', departure_time, 1, 1, 1, 1, 1, True)
+            self.assertRaises(requests.exceptions.HTTPError, Transition.request_routing_result, ["mode1", "mode2"], [0, 0], [0, 0], "scenario-id", 'Departure', departure_time, 1, 1, 1, 1, 1, True)
             self.assertTrue(m.called)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(m.last_request.json(), self.test_route_params)
