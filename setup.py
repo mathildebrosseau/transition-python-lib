@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='transition-lib-test',
-    version='0.1.3',    
+    version='0.1.4',    
     description='A Python package to interact with the Transition API.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
