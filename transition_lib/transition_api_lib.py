@@ -67,18 +67,14 @@ class Transition:
         url, token = Transition._set_parameters(url, token)           
         headers = Transition._build_headers(token)
         response = requests.get(f"{url}/paths", headers=headers)
-        print(f"getting paths from {url}/paths with token {token}")
-        print(response)
         response.raise_for_status()
         return response.json()
 
     @staticmethod
     def get_nodes(url=None, token=None):
         url, token = Transition._set_parameters(url, token)
-        print(f"getting nodes from {url}/nodes with token {token}")
         headers = Transition._build_headers(token)
         response = requests.get(f"{url}/nodes", headers=headers)
-        print(response)
         response.raise_for_status()
         return response.json()
 
@@ -93,7 +89,6 @@ class Transition:
     @staticmethod    
     def get_routing_modes(url=None, token=None):
         url, token = Transition._set_parameters(url, token)
-        print(f"getting routing modes from {url} with token {token}")
         headers = Transition._build_headers(token)
         response = requests.get(f"{url}/routing-modes", headers=headers)
         response.raise_for_status()
