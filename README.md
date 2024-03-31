@@ -207,7 +207,7 @@ def get_transition_nodes():
     # Process nodes however you want. Here, we are just printing the result
     print(nodes)
 ```
-Alternatively, you can set your token and URL for the current session and avoir sending them as parameters. This can be useful if multiple calls are to be made in your script.
+Alternatively, the token and URL can be set for the current session in order to avoid sending them as parameters. This can be useful if multiple calls are to be made in the script. This can be done as follows :
 ```python
 import Transition
 
@@ -224,7 +224,7 @@ def get_transition_nodes():
     print(nodes)
 ```
 
-Another example to get a new accessibility map :
+Another example using Transition to get a new accessibility map :
 ```python
 import Transition
 from datetime import time
