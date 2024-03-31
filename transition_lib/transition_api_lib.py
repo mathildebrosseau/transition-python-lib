@@ -27,15 +27,11 @@ class Transition:
         if url is not None and url != "":
             Transition.BASE_URL = url
             Transition.API_URL = f"{Transition.BASE_URL}/api"
-
-            Transition.config['URL']['base_url'] = url
-            with open(Transition.config_path, 'w') as config_file:
-                Transition.config.write(config_file)
         else:
             raise ValueError("URL cannot be empty.")
     
     @staticmethod
-    def build_body(username, password):
+    def _build_body(username, password):
         if username is None or password is None:
             raise ValueError("Username or password not set.")
 
@@ -47,7 +43,7 @@ class Transition:
         return body            
 
     @staticmethod
-    def build_headers(token=None):
+    def _build_headers(token=None):
         token = Transition.TOKEN if token is None else token
         if token is None or token == "":
             raise ValueError("Token not set.")
@@ -61,7 +57,7 @@ class Transition:
     @staticmethod
     def request_token(username, password,url=None):
         url = Transition.BASE_URL if url is None else url
-        body = Transition.build_body(username, password)
+        body = Transition._build_body(username, password)
         response = requests.post(f"{url}/token", json=body)
         response.raise_for_status()
         return response.text
@@ -69,32 +65,36 @@ class Transition:
     @staticmethod
     def get_paths(url=None, token=None):
         url, token = Transition._set_parameters(url, token)           
-        headers = Transition.build_headers(token)
+        headers = Transition._build_headers(token)
         response = requests.get(f"{url}/paths", headers=headers)
+        print(f"getting paths from {url}/paths with token {token}")
+        print(response)
         response.raise_for_status()
         return response.json()
 
     @staticmethod
     def get_nodes(url=None, token=None):
         url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
+        print(f"getting nodes from {url}/nodes with token {token}")
+        headers = Transition._build_headers(token)
         response = requests.get(f"{url}/nodes", headers=headers)
+        print(response)
         response.raise_for_status()
         return response.json()
 
     @staticmethod
     def get_scenarios(url=None, token=None):
         url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
+        headers = Transition._build_headers(token)
         response = requests.get(f"{url}/scenarios", headers=headers)
         response.raise_for_status()
-        return response
+        return response.json()
         
     @staticmethod    
     def get_routing_modes(url=None, token=None):
         url, token = Transition._set_parameters(url, token)
         print(f"getting routing modes from {url} with token {token}")
-        headers = Transition.build_headers(token)
+        headers = Transition._build_headers(token)
         response = requests.get(f"{url}/routing-modes", headers=headers)
         response.raise_for_status()
         response = [x.replace("[", "").replace("]", "").replace('"', "") for x in response.text.split(",")]
@@ -150,7 +150,7 @@ class Transition:
         }
 
         url = Transition.API_URL if url is None else url
-        headers = Transition.build_headers(token)
+        headers = Transition._build_headers(token)
         params = {'withGeojson': 'true' if with_geojson else 'false'}
         response = requests.post(f"{url}/accessibility", headers=headers, json=body, params=params)
         response.raise_for_status()
@@ -199,7 +199,7 @@ class Transition:
         }
         
         url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
+        headers = Transition._build_headers(token)
         params = {"withGeojson": "true" if with_geojson else "false"}
         response = requests.post(f"{url}/route", headers=headers, json=body, params=params)
         response.raise_for_status()
