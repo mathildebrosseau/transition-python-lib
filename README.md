@@ -13,9 +13,9 @@ After installing Transition, it may be imported into Python code like :
 import Transition
 ```
 ## Usage
-Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and used URL for the current instance using the `set_token` and `set_url` methods. Alternatively, users can send the token and the url as parameters directly within the methods.
+Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and used URL for the current instance using the `set_token` and `set_url` methods. Alternatively, users can send the token and the URL as parameters directly when calling methods.
 
-All methods in Transition are static methods. The library provides the following :
+All methods in Transition are static. The library provides the following :
 
 ### set_token :
 This method allows users to set the token that will be used for the API calls.
@@ -27,7 +27,7 @@ This method allows users to set the token that will be used for the API calls.
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If the parameter is empty.
 
 ### set_url :
-This method allows users to set the base URL that will be used for the API calls. By default, it is set to the development URL.
+This method allows users to set the base URL that will be used for the API calls.
 
 **Parameters :**&emsp;***url***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;URL used for API calls.
