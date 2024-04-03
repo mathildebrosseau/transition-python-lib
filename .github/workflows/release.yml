@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          path: 'transition-python-lib'
+        # with:
+        #   path: 'transition-python-lib'
 
       - name: Print current working directory
         run: |
