@@ -3,7 +3,7 @@ name: Release Transition-Python-Lib to TestPyPI
 on:
   push:
     branches:
-      - deploy
+      - deploy-subfolder-test
 
 jobs:
   release:
