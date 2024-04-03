@@ -12,13 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # with:
-        #   path: 'transition-python-lib/transition-python-lib'
-
-      - name: Print current working directory
-        run: |
-          pwd
-          ls -la
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,6 +29,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           cd transition-python-lib
-          ls -la
           python setup.py sdist bdist_wheel
           twine upload --repository-url https://test.pypi.org/legacy/ dist/*
