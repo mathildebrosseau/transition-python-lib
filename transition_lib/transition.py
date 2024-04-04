@@ -6,12 +6,11 @@ from datetime import time
 
 class Transition:
     BASE_URL = ""
-    API_URL = ""
     TOKEN = ""
 
     @staticmethod
-    def _set_parameters(url, token):
-        url = Transition.API_URL if url is None else url
+    def __set_parameters(url, token):
+        url = Transition.BASE_URL if url is None else url
         token = Transition.TOKEN if token is None else token
         return url, token
 
@@ -26,12 +25,11 @@ class Transition:
     def set_url(url):
         if url is not None and url != "":
             Transition.BASE_URL = url
-            Transition.API_URL = f"{Transition.BASE_URL}/api"
         else:
             raise ValueError("URL cannot be empty.")
     
     @staticmethod
-    def build_body(username, password):
+    def __build_body(username, password):
         if username is None or password is None:
             raise ValueError("Username or password not set.")
 
@@ -43,7 +41,7 @@ class Transition:
         return body            
 
     @staticmethod
-    def build_headers(token=None):
+    def __build_headers(token=None):
         token = Transition.TOKEN if token is None else token
         if token is None or token == "":
             raise ValueError("Token not set.")
@@ -57,48 +55,46 @@ class Transition:
     @staticmethod
     def request_token(username, password,url=None):
         url = Transition.BASE_URL if url is None else url
-        body = Transition.build_body(username, password)
+        body = Transition.__build_body(username, password)
         response = requests.post(f"{url}/token", json=body)
         response.raise_for_status()
         return response.text
 
     @staticmethod
     def get_paths(url=None, token=None):
-        url, token = Transition._set_parameters(url, token)           
-        headers = Transition.build_headers(token)
-        response = requests.get(f"{url}/paths", headers=headers)
+        url, token = Transition.__set_parameters(url, token)           
+        headers = Transition.__build_headers(token)
+        response = requests.get(f"{url}/api/paths", headers=headers)
         response.raise_for_status()
         return response.json()
 
     @staticmethod
     def get_nodes(url=None, token=None):
-        url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
-        response = requests.get(f"{url}/nodes", headers=headers)
+        url, token = Transition.__set_parameters(url, token)
+        headers = Transition.__build_headers(token)
+        response = requests.get(f"{url}/api/nodes", headers=headers)
         response.raise_for_status()
         return response.json()
 
     @staticmethod
     def get_scenarios(url=None, token=None):
-        url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
-        response = requests.get(f"{url}/scenarios", headers=headers)
+        url, token = Transition.__set_parameters(url, token)
+        headers = Transition.__build_headers(token)
+        response = requests.get(f"{url}/api/scenarios", headers=headers)
         response.raise_for_status()
-        return response
+        return response.json()
         
     @staticmethod    
     def get_routing_modes(url=None, token=None):
-        url, token = Transition._set_parameters(url, token)
-        print(f"getting routing modes from {url} with token {token}")
-        headers = Transition.build_headers(token)
-        response = requests.get(f"{url}/routing-modes", headers=headers)
+        url, token = Transition.__set_parameters(url, token)
+        headers = Transition.__build_headers(token)
+        response = requests.get(f"{url}/api/routing-modes", headers=headers)
         response.raise_for_status()
         response = [x.replace("[", "").replace("]", "").replace('"', "") for x in response.text.split(",")]
         return response
 
     @staticmethod
-    def request_accessibility_map(coord_latitude,
-                              coord_longitude,
+    def request_accessibility_map(coordinates,
                               scenario_id, 
                               departure_or_arrival_choice,
                               departure_or_arrival_time: time,
@@ -136,19 +132,16 @@ class Transition:
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [
-                        coord_longitude,
-                        coord_latitude
-                    ]
+                    "coordinates": coordinates
                 }
             },
         "scenarioId": scenario_id
         }
 
-        url = Transition.API_URL if url is None else url
-        headers = Transition.build_headers(token)
+        url, token = Transition.__set_parameters(url, token)
+        headers = Transition.__build_headers(token)
         params = {'withGeojson': 'true' if with_geojson else 'false'}
-        response = requests.post(f"{url}/accessibility", headers=headers, json=body, params=params)
+        response = requests.post(f"{url}/api/accessibility", headers=headers, json=body, params=params)
         response.raise_for_status()
         return response.json()
 
@@ -159,12 +152,13 @@ class Transition:
                            scenario_id, 
                            departure_or_arrival_choice, 
                            departure_or_arrival_time, 
-                           max_travel_time, 
-                           min_waiting_time,
-                           max_transfer_time, 
-                           max_access_time, 
-                           max_first_waiting_time, 
+                           max_travel_time_minutes, 
+                           min_waiting_time_minutes,
+                           max_transfer_time_minutes, 
+                           max_access_time_minutes, 
+                           max_first_waiting_time_minutes, 
                            with_geojson,
+                           with_alternatives,
                            url=None,
                            token=None):
         departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
@@ -173,14 +167,14 @@ class Transition:
 
         body = {
             "routingModes" : modes,
-            "withAlternatives" : "false",
+            "withAlternatives" : "true" if with_alternatives else "false",
             "departureTimeSecondsSinceMidnight" : departure_time,
             "arrivalTimeSecondsSinceMidnight" : arrival_time,
-            "minWaitingTimeSeconds" : min_waiting_time * 60, 
-            "maxTransferTravelTimeSeconds" : max_transfer_time * 60,
-            "maxAccessEgressTravelTimeSeconds" : max_access_time * 60,
-            "maxFirstWaitingTimeSeconds" : max_first_waiting_time * 60,
-            "maxTotalTravelTimeSeconds" : max_travel_time * 60,
+            "minWaitingTimeSeconds" : min_waiting_time_minutes * 60, 
+            "maxTransferTravelTimeSeconds" : max_transfer_time_minutes * 60,
+            "maxAccessEgressTravelTimeSeconds" : max_access_time_minutes * 60,
+            "maxFirstWaitingTimeSeconds" : max_first_waiting_time_minutes * 60,
+            "maxTotalTravelTimeSeconds" : max_travel_time_minutes * 60,
             "scenarioId" : scenario_id,
             "originGeojson" : {
                 "type": "Feature",
@@ -194,10 +188,10 @@ class Transition:
             }
         }
         
-        url, token = Transition._set_parameters(url, token)
-        headers = Transition.build_headers(token)
+        url, token = Transition.__set_parameters(url, token)
+        headers = Transition.__build_headers(token)
         params = {"withGeojson": "true" if with_geojson else "false"}
-        response = requests.post(f"{url}/route", headers=headers, json=body, params=params)
+        response = requests.post(f"{url}/api/route", headers=headers, json=body, params=params)
         response.raise_for_status()
         return response.json()
         
