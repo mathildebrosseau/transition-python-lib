@@ -94,8 +94,7 @@ class Transition:
         return response
 
     @staticmethod
-    def request_accessibility_map(coord_latitude,
-                              coord_longitude,
+    def request_accessibility_map(coordinates,
                               scenario_id, 
                               departure_or_arrival_choice,
                               departure_or_arrival_time: time,
@@ -133,16 +132,13 @@ class Transition:
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [
-                        coord_longitude,
-                        coord_latitude
-                    ]
+                    "coordinates": coordinates
                 }
             },
         "scenarioId": scenario_id
         }
 
-        url = Transition.API_URL if url is None else url
+        url, token = Transition.__set_parameters(url, token)
         headers = Transition.__build_headers(token)
         params = {'withGeojson': 'true' if with_geojson else 'false'}
         response = requests.post(f"{url}/api/accessibility", headers=headers, json=body, params=params)
