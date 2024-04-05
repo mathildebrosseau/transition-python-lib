@@ -9,7 +9,7 @@ setup(
     version='0.1.0',    
     description=description,
     packages=find_packages(),
-    install_requires=['requests'],
+    install_requires=['requests', 'requests_mock'],
 
     classifiers=[
         'License :: OSI Approved :: MIT License',  
