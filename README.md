@@ -1,6 +1,7 @@
 <!-- The fact that the library and the app have the same names is confusing.. -->
 # Transition
-Transition is a Python package designed to interact with the public API of the transit planning application Transition. It allows users to retrieve and request geographic and routing data from the app.
+Transition is a Python package designed to interact with the public API of the transit planning application Transition. It allows users to retrieve and request geographic and routing data from the app.\
+The documentation for the Transition public API used by this library can be found [here](https://mathildebrosseau.github.io/transition-api/)
 
 ## Install and import Transition
 To install Transition, use the following command :

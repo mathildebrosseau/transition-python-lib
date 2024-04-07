@@ -94,8 +94,7 @@ class Transition:
         return response
 
     @staticmethod
-    def request_accessibility_map(coord_latitude,
-                              coord_longitude,
+    def request_accessibility_map(coordinates,
                               scenario_id, 
                               departure_or_arrival_choice,
                               departure_or_arrival_time: time,
@@ -133,10 +132,7 @@ class Transition:
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [
-                        coord_longitude,
-                        coord_latitude
-                    ]
+                    "coordinates": coordinates
                 }
             },
         "scenarioId": scenario_id
