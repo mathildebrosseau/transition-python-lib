@@ -91,6 +91,7 @@ class TestTransition(unittest.TestCase):
     def test_build_headers_empty(self):
         Transition.TOKEN = None
         self.assertRaises(ValueError, Transition._Transition__build_headers, None)
+        self.assertRaises(ValueError, Transition._Transition__build_headers)
 
     def test_request_token(self):
         with requests_mock.Mocker() as m:
