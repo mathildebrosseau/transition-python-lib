@@ -1,7 +1,4 @@
-import json
 import requests
-import geojson
-import os
 from datetime import time
 
 class Transition:
