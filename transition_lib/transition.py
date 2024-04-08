@@ -167,7 +167,7 @@ class Transition:
 
         body = {
             "routingModes" : modes,
-            "withAlternatives" : "true" if with_alternatives else "false",
+            "withAlternatives" : with_alternatives,
             "departureTimeSecondsSinceMidnight" : departure_time,
             "arrivalTimeSecondsSinceMidnight" : arrival_time,
             "minWaitingTimeSeconds" : min_waiting_time_minutes * 60, 
