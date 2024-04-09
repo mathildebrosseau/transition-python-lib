@@ -125,7 +125,7 @@ class Transition:
             "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
             "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
             "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
-            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
+            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60 if max_first_waiting_time_minutes else None,
             "walkingSpeedMps": walking_speed_kmh * (1000/3600),
             "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
             "locationGeojson": {
