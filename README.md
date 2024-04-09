@@ -14,12 +14,12 @@ After installing Transition, it may be imported into Python code like :
 import Transition
 ```
 ## Usage
-Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and server URL for the current instance using the `set_token` and `set_url` methods. Alternatively, users can send the token and the URL as parameters directly when calling methods.
+Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and server URL for the current instance using the `set_token` and `set_url` methods. The token and URL will be set as local variables. Alternatively, users can send the token and the URL as parameters directly when calling methods.
 
 All methods in Transition are static. The library provides the following :
 
 ### set_token :
-This method allows users to set the token that will be used for the API calls.
+This method allows users to set the token that will be used for the API calls in a local variable within the Transition library.
 
 **Parameters :**&emsp;***token***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;token used for API calls.
@@ -28,7 +28,7 @@ This method allows users to set the token that will be used for the API calls.
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If the parameter is empty.
 
 ### set_url :
-This method allows users to set the server URL that will be used for the API calls.
+This method allows users to set the server URL that will be used for the API calls in a local variable within the Transition library.
 
 **Parameters :**&emsp;***url***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;server URL used for API calls.
@@ -110,10 +110,8 @@ This method allows users to fetch all routing modes which are currently loaded i
 
 ### get_accessibility_map
 This method allows users to send accessibility map parameters to the Transition server to request a new accessibility map. In case of a successful request, the accessibility map is returned in JSON format.\
-**Parameters :**&emsp;***coord_latitude*** : *float*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Latitude of the starting point of the accessibility map.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***coord_longitude***&ensp;:&ensp;*float*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Longitude of the starting point of the accessibility map.\
+**Parameters :**&emsp;***coordinates*** : *list*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Coordinates of the starting point of the accessibility map. Must be sent as [longitude, latitude]\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***scenario_id***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ID of the used scenario as loaded in Transition application.\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_choice***&ensp;:&ensp;*string* \
