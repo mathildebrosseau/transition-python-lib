@@ -22,6 +22,7 @@
 
 import requests
 from datetime import time
+import json
 
 class Transition:
     BASE_URL = ""
@@ -109,10 +110,7 @@ class Transition:
         headers = Transition.__build_headers(token)
         response = requests.get(f"{url}/api/routing-modes", headers=headers)
         response.raise_for_status()
-        # The response is in string format, we need to convert it to a list.
-        # A direct conversion to a list will not work because it will be a list of elements, not a list of strings.
-        response = [x.replace("[", "").replace("]", "").replace('"', "") for x in response.text.split(",")]
-        return response
+        return json.loads(response.text)
 
     @staticmethod
     def request_accessibility_map(coordinates,
