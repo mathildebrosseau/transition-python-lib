@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from setuptools import setup,  find_packages
+from setuptools import setup, find_packages
 from pathlib import Path
 
 # The directory containing this file
 HERE = Path(__file__).parent
 description = (HERE / "README.md").read_text()
 setup(
-    name='transition_lib',
+    name='pyTransition',
     version='0.1.0',    
     description=description,
     packages=find_packages(),

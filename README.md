@@ -11,7 +11,7 @@ pip install transition-lib
 ```
 After installing Transition, it may be imported into Python code like :
 ```python
-import Transition
+from pyTransition.transition import Transition
 ```
 ## Usage
 Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and server URL for the current instance using the `set_token` and `set_url` methods. The token and URL will be stored as local variables for the duration of the script only. Alternatively, users can send the token and the URL as parameters directly when calling methods.
