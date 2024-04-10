@@ -23,19 +23,19 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 
-# The directory containing this file
-HERE = Path(__file__).parent
-description = (HERE / "README.md").read_text()
 setup(
     name='pyTransition',
     version='0.1.0',    
-    description=description,
+    description='A Python package to interact with the Transition API.',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    author='Transition City',
     packages=find_packages(),
     install_requires=['requests', 'requests_mock'],
-
+    python_requires='>=3.6',
     classifiers=[
         'License :: OSI Approved :: MIT License',  
-        'Operating System :: Linux', 
+        'Operating System :: OS Independent', 
         'Programming Language :: Python :: 3',
     ],
 )
