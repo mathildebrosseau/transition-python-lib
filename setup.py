@@ -21,16 +21,17 @@
 # SOFTWARE.
 
 from setuptools import setup, find_packages
+from pathlib import Path
 
 setup(
-    name='transition-lib-test',
-    version='0.1.11',    
+    name='pyTransition',
+    version='0.1.0',    
     description='A Python package to interact with the Transition API.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    author='Mathilde',
+    author='Transition City',
     packages=find_packages(),
-    install_requires=['requests', 'geojson'],
+    install_requires=['requests', 'requests_mock'],
     python_requires='>=3.6',
     classifiers=[
         'License :: OSI Approved :: MIT License',  
