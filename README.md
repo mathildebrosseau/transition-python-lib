@@ -1,25 +1,25 @@
 <!-- The fact that the library and the app have the same names is confusing.. -->
 # Transition
-Transition is a Python package designed to interact with the public API of the transit planning application Transition. It allows users to retrieve and request geographic and routing data from the app.\
+pyTransition is a Python package designed to interact with the public API of the transit planning application Transition. It allows users to retrieve and request geographic and routing data from the app.\
 The documentation for the Transition public API used by this library can be found [here](https://mathildebrosseau.github.io/transition-api/)
 
 ## Install and import Transition
-To install Transition, use the following command :
+To install pyTransition, use the following command :
 <!-- -[//]:#(probably something like pip install transition)- -->
 ```
-pip install transition-lib
+pip install pyTransition
 ```
-After installing Transition, it may be imported into Python code like :
+After installing pyTransition, it may be imported into Python code like :
 ```python
-from transition_lib.transition import Transition
+from pyTransition.transition import Transition
 ```
 ## Usage
-Transition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and server URL for the current instance using the `set_token` and `set_url` methods. Alternatively, users can send the token and the URL as parameters directly when calling methods.
+pyTransition allows users to send HTTP requests. Before requesting data, users must first request a token. This is done using the `request_token` method. Afterwards, users can either set the token and server URL for the current instance using the `set_token` and `set_url` methods. The token and URL will be stored as local variables for the duration of the script only. Alternatively, users can send the token and the URL as parameters directly when calling methods.
 
 All methods in Transition are static. The library provides the following :
 
 ### set_token :
-This method allows users to set the token that will be used for the API calls.
+This method allows users to set the token that will be used for the API calls in a local variable within the pyTransition library.
 
 **Parameters :**&emsp;***token***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;token used for API calls.
@@ -28,7 +28,7 @@ This method allows users to set the token that will be used for the API calls.
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If the parameter is empty.
 
 ### set_url :
-This method allows users to set the server URL that will be used for the API calls.
+This method allows users to set the server URL that will be used for the API calls in a local variable within the Transition library.
 
 **Parameters :**&emsp;***url***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;server URL used for API calls.
@@ -110,10 +110,8 @@ This method allows users to fetch all routing modes which are currently loaded i
 
 ### get_accessibility_map
 This method allows users to send accessibility map parameters to the Transition server to request a new accessibility map. In case of a successful request, the accessibility map is returned in JSON format.\
-**Parameters :**&emsp;***coord_latitude*** : *float*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Latitude of the starting point of the accessibility map.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***coord_longitude***&ensp;:&ensp;*float*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Longitude of the starting point of the accessibility map.\
+**Parameters :**&emsp;***coordinates*** : *list*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Coordinates of the starting point of the accessibility map. Must be sent as [longitude, latitude]\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***scenario_id***&ensp;:&ensp;*string*\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ID of the used scenario as loaded in Transition application.\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_choice***&ensp;:&ensp;*string* \
@@ -191,9 +189,9 @@ This method allows users to send calculation parameters to the Transition server
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
 
 ## Example
-Users can fetch the nodes which are currently loaded in the Transition application using Transition as follows :
+Users can fetch the nodes which are currently loaded in the Transition application using pyTransition as follows :
 ```python
-import Transition
+from pyTransition.transition import Transition
 
 def get_transition_nodes():
     url = "http://localhost:8080"
@@ -210,7 +208,7 @@ def get_transition_nodes():
 ```
 Alternatively, the token and URL can be set for the current session in order to avoid sending them as parameters. This can be useful if multiple calls are to be made in the script. This can be done as follows :
 ```python
-import Transition
+from pyTransition.transition import Transition
 
 def get_transition_nodes():
     # Set the URL and token.
@@ -225,9 +223,9 @@ def get_transition_nodes():
     print(nodes)
 ```
 
-Another example using Transition to get a new accessibility map :
+Another example using pyTransition to get a new accessibility map :
 ```python
-import Transition
+from pyTransition.transition import Transition
 from datetime import time
 import json
 
@@ -245,8 +243,7 @@ def get_transition_acessibility_map():
 
     # Call the API
     accessibility_map_data = Transition.request_accessibility_map(
-                coord_latitude=45.5383,
-                coord_longitude=-73.4727,
+                coordinates=[45.5383, -73.4727],
                 departure_or_arrival_choice="Departure",
                 departure_or_arrival_time=time(8,0), # Create a new time object representing 8:00
                 n_polygons=3,
@@ -269,9 +266,9 @@ def get_transition_acessibility_map():
 
 ```
 
-Another example using Transition to get a new routes :
+Another example using pyTransition to get a new routes :
 ```python
-import Transition
+from pyTransition.transition import Transition
 from datetime import time
 import json
 
