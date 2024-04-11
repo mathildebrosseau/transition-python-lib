@@ -1,10 +1,9 @@
 import unittest
-from unittest.mock import patch
 import requests
 import requests_mock
 from datetime import time
 
-from ..transition_lib.transition import Transition
+from ..pyTransition.transition import Transition
 
 class TestTransition(unittest.TestCase):
     def setUp(self):
