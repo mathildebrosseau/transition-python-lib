@@ -179,7 +179,7 @@ class Transition:
         "scenarioId": scenario_id
         }
 
-        headers = Transition.__build_headers()
+        headers = self.__build_headers()
         params = {'withGeojson': 'true' if with_geojson else 'false'}
         response = requests.post(f"{self.base_url}/api/accessibility", headers=headers, json=body, params=params)
         response.raise_for_status()
