@@ -25,14 +25,23 @@ from datetime import time
 import json
 
 class Transition:
-    def __init__(self, url, username, password):
+    def __init__(self, url, username, password, token=None):
+        if url is None or url == "":
+            raise ValueError("URL cannot be empty.")
         self.base_url = url
-        self.token = self.__request_token(username, password)
+
+        # To instantiate Transition instance from token only
+        if username is None and password is None and token is not None:
+            self.token = self.__request_token(username, password)
+        
+        # To instantiate Transition instance from username and password authentication
+        else:
+            self.token = self.__request_token(username, password)
 
     # TODO : ajouter self
     def __build_body(self, username, password):
         if username is None or password is None:
-            raise ValueError("Username or password not set.")
+            raise ValueError("Username or password empty.")
 
         body = {
             "usernameOrEmail": username,
