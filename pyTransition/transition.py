@@ -32,7 +32,7 @@ class Transition:
 
         # To instantiate Transition instance from token only
         if username is None and password is None and token is not None:
-            self.token = self.__request_token(username, password)
+            self.token = token
         
         # To instantiate Transition instance from username and password authentication
         else:
