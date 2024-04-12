@@ -24,8 +24,8 @@ from setuptools import setup, find_packages
 from pathlib import Path
 
 setup(
-    name='pyTransition',
-    version='0.1.0',    
+    name='transition-lib-test',
+    version='0.1.12',    
     description='A Python package to interact with the Transition API.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
