@@ -1,3 +1,5 @@
+from .transition import Transition
+
 """
 pyTransition
 

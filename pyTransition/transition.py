@@ -25,33 +25,23 @@ from datetime import time
 import json
 
 class Transition:
-    BASE_URL = ""
-    TOKEN = ""
-
-    @staticmethod
-    def __set_parameters(url, token):
-        url = Transition.BASE_URL if url is None else url
-        token = Transition.TOKEN if token is None else token
-        return url, token
-
-    @staticmethod
-    def set_token(token):
-        if token is not None and token != "":
-            Transition.TOKEN = token            
-        else:
-            raise ValueError("Token cannot be empty.")
-        
-    @staticmethod
-    def set_url(url):
-        if url is not None and url != "":
-            Transition.BASE_URL = url
-        else:
+    def __init__(self, url, username, password, token=None):
+        if url is None or url == "":
             raise ValueError("URL cannot be empty.")
-    
-    @staticmethod
-    def __build_body(username, password):
+        self.base_url = url
+
+        # To instantiate Transition instance from token only
+        if username is None and password is None and token is not None:
+            self.token = token
+        
+        # To instantiate Transition instance from username and password authentication
+        else:
+            self.token = self.__request_token(username, password)
+
+    # TODO : ajouter self
+    def __build_body(self, username, password):
         if username is None or password is None:
-            raise ValueError("Username or password not set.")
+            raise ValueError("Username or password empty.")
 
         body = {
             "usernameOrEmail": username,
@@ -60,126 +50,60 @@ class Transition:
 
         return body            
 
-    @staticmethod
-    def __build_headers(token=None):
-        token = Transition.TOKEN if token is None else token
-        if token is None or token == "":
+    def __build_headers(self):
+        if self.token is None or self.token == "":
             raise ValueError("Token not set.")
         
         headers = {
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {self.token}"
         }
 
         return headers
-    
-    @staticmethod
-    def request_token(username, password,url=None):
-        url = Transition.BASE_URL if url is None else url
-        body = Transition.__build_body(username, password)
-        response = requests.post(f"{url}/token", json=body)
+
+    def __request_token(self, username, password):
+        body = self.__build_body(username, password)
+        response = requests.post(f"{self.base_url}/token", json=body)
         response.raise_for_status()
         return response.text
 
-    @staticmethod
-    def get_paths(url=None, token=None):
-        url, token = Transition.__set_parameters(url, token)           
-        headers = Transition.__build_headers(token)
-        response = requests.get(f"{url}/api/paths", headers=headers)
+    def get_paths(self):      
+        headers = self.__build_headers()
+        response = requests.get(f"{self.base_url}/api/paths", headers=headers)
         response.raise_for_status()
         return response.json()
 
-    @staticmethod
-    def get_nodes(url=None, token=None):
-        url, token = Transition.__set_parameters(url, token)
-        headers = Transition.__build_headers(token)
-        response = requests.get(f"{url}/api/nodes", headers=headers)
+    def get_nodes(self):
+        headers = self.__build_headers()
+        response = requests.get(f"{self.base_url}/api/nodes", headers=headers)
         response.raise_for_status()
         return response.json()
 
-    @staticmethod
-    def get_scenarios(url=None, token=None):
-        url, token = Transition.__set_parameters(url, token)
-        headers = Transition.__build_headers(token)
-        response = requests.get(f"{url}/api/scenarios", headers=headers)
+    def get_scenarios(self):
+        headers = self.__build_headers()
+        response = requests.get(f"{self.base_url}/api/scenarios", headers=headers)
         response.raise_for_status()
         return response.json()
-        
-    @staticmethod    
-    def get_routing_modes(url=None, token=None):
-        url, token = Transition.__set_parameters(url, token)
-        headers = Transition.__build_headers(token)
-        response = requests.get(f"{url}/api/routing-modes", headers=headers)
+ 
+    def get_routing_modes(self):
+        headers = self.__build_headers()
+        response = requests.get(f"{self.base_url}/api/routing-modes", headers=headers)
         response.raise_for_status()
         return json.loads(response.text)
 
-    @staticmethod
-    def request_accessibility_map(coordinates,
-                              scenario_id, 
-                              departure_or_arrival_choice,
-                              departure_or_arrival_time: time,
-                              n_polygons,
-                              delta_minutes,
-                              delta_interval_minutes,
-                              place_name,
-                              max_total_travel_time_minutes,
-                              min_waiting_time_minutes,
-                              max_access_egress_travel_time_minutes,
-                              max_transfer_travel_time_minutes,
-                              max_first_waiting_time_minutes,
-                              walking_speed_kmh,
-                              with_geojson,
-                              url=None, 
-                              token=None
-                              ):
-        departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
-        departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
-        arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
-
-        body = {
-            "departureTimeSecondsSinceMidnight": departure_time_seconds,
-            "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
-            "deltaIntervalSeconds": delta_interval_minutes * 60,
-            "deltaSeconds": delta_minutes * 60,
-            "numberOfPolygons": n_polygons,
-            "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
-            "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
-            "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
-            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60 if max_first_waiting_time_minutes else None,
-            "walkingSpeedMps": walking_speed_kmh * (1000/3600),
-            "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
-            "locationGeojson": {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": coordinates
-                }
-            },
-        "scenarioId": scenario_id
-        }
-
-        url, token = Transition.__set_parameters(url, token)
-        headers = Transition.__build_headers(token)
-        params = {'withGeojson': 'true' if with_geojson else 'false'}
-        response = requests.post(f"{url}/api/accessibility", headers=headers, json=body, params=params)
-        response.raise_for_status()
-        return response.json()
-
-    @staticmethod
-    def request_routing_result(modes, 
-                           origin, 
-                           destination, 
-                           scenario_id, 
-                           departure_or_arrival_choice, 
-                           departure_or_arrival_time, 
-                           max_travel_time_minutes, 
-                           min_waiting_time_minutes,
-                           max_transfer_time_minutes, 
-                           max_access_time_minutes, 
-                           max_first_waiting_time_minutes, 
-                           with_geojson,
-                           with_alternatives,
-                           url=None,
-                           token=None):
+    def request_routing_result(self,
+                               modes, 
+                               origin, 
+                               destination, 
+                               scenario_id, 
+                               departure_or_arrival_choice, 
+                               departure_or_arrival_time, 
+                               max_travel_time_minutes, 
+                               min_waiting_time_minutes,
+                               max_transfer_time_minutes, 
+                               max_access_time_minutes, 
+                               max_first_waiting_time_minutes, 
+                               with_geojson,
+                               with_alternatives):
         departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
         departure_time = departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
         arrival_time = departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
@@ -207,9 +131,57 @@ class Transition:
             }
         }
         
-        url, token = Transition.__set_parameters(url, token)
-        headers = Transition.__build_headers(token)
+        headers = self.__build_headers()
         params = {"withGeojson": "true" if with_geojson else "false"}
-        response = requests.post(f"{url}/api/route", headers=headers, json=body, params=params)
+        response = requests.post(f"{self.base_url}/api/route", headers=headers, json=body, params=params)
         response.raise_for_status()
         return response.json()
+
+    def request_accessibility_map(self,
+                                  coordinates,
+                                  scenario_id, 
+                                  departure_or_arrival_choice,
+                                  departure_or_arrival_time: time,
+                                  n_polygons,
+                                  delta_minutes,
+                                  delta_interval_minutes,
+                                  place_name,
+                                  max_total_travel_time_minutes,
+                                  min_waiting_time_minutes,
+                                  max_access_egress_travel_time_minutes,
+                                  max_transfer_travel_time_minutes,
+                                  max_first_waiting_time_minutes,
+                                  walking_speed_kmh,
+                                  with_geojson):
+        departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
+        departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
+        arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
+
+        body = {
+            "departureTimeSecondsSinceMidnight": departure_time_seconds,
+            "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
+            "deltaIntervalSeconds": delta_interval_minutes * 60,
+            "deltaSeconds": delta_minutes * 60,
+            "numberOfPolygons": n_polygons,
+            "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
+            "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
+            "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
+            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60 if max_first_waiting_time_minutes else None,
+            "walkingSpeedMps": walking_speed_kmh * (1000/3600),
+            "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
+            "locationGeojson": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": coordinates
+                }
+            },
+        "scenarioId": scenario_id
+        }
+
+        headers = self.__build_headers()
+        params = {'withGeojson': 'true' if with_geojson else 'false'}
+        response = requests.post(f"{self.base_url}/api/accessibility", headers=headers, json=body, params=params)
+        response.raise_for_status()
+        return response.json()
+    
