@@ -145,7 +145,6 @@ class Transition:
                                   n_polygons,
                                   delta_minutes,
                                   delta_interval_minutes,
-                                  place_name,
                                   max_total_travel_time_minutes,
                                   min_waiting_time_minutes,
                                   max_access_egress_travel_time_minutes,
