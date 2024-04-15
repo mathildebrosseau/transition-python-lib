@@ -101,49 +101,6 @@ This method allows users to fetch all routing modes which are currently loaded i
 **Raises :**&emsp;**&emsp;**&emsp;***RequestException***\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
 
-### get_accessibility_map
-This method allows users to send accessibility map parameters to the Transition server to request a new accessibility map. In case of a successful request, the accessibility map is returned in JSON format.\
-**Parameters :**&emsp;***coordinates*** : *list*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Coordinates of the starting point of the accessibility map. Must be sent as [longitude, latitude]\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***scenario_id***&ensp;:&ensp;*string*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ID of the used scenario as loaded in Transition application.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_choice***&ensp;:&ensp;*string* \
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Specifies whether the used time is "Departure" or "Arrival".\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_time***&ensp;:&ensp;*Time* \
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Departure or arrival time of the trip.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***n_polygons***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Number of polygons to be calculated\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***delta_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Baseline delta used for average accessibility map calculations.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***delta_interval_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Interval used between each calculation.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***place_name***&ensp;:&ensp;*string*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Name of the place. <!-- Not sure about this one -->\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_total_travel_time_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum travel time, in minutes.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***min_waiting_time_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Minimum waiting time, in minutes.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_access_egress_travel_time_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum access time, in minutes.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_transfer_travel_time_minutes***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum transfer time, in minutes.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_first_waiting_time_minutes***&ensp;:&ensp;*bool*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum wait time at first transit stop, in minutes.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***walking_speed_kmh***&ensp;:&ensp;*int*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Walking speed, in km/h\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***with_geojson***&ensp;:&ensp;*bool*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If True, the returned JSON file will contain geometry information for the strokes and polygons of the accessibility map.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***url***&ensp;:&ensp;*string*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;The server URL where the request is sent.\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***token***&ensp;:&ensp;*string*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;The token used for user authentication.
-
-**Returns :**&emsp;&emsp;&ensp;***result*** : *JSON*\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Accessibility map information in JSON format.
-
-**Raises :**&emsp;**&emsp;**&emsp;***RequestException***\
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
-
 ### get_routing_result:
 This method allows users to send calculation parameters to the Transition server to request a new route. The request can be made for different transit modes. In case of a successful request, the new route is returned in JSON format.\
 **Parameters :**&emsp;***modes*** : *list*\
@@ -179,6 +136,47 @@ This method allows users to send calculation parameters to the Transition server
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Route for each transit mode in JSON format.
 
 **Raises :**&emsp;***RequestException***\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
+
+### get_accessibility_map
+This method allows users to send accessibility map parameters to the Transition server to request a new accessibility map. In case of a successful request, the accessibility map is returned in JSON format.\
+**Parameters :**&emsp;***coordinates*** : *list*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Coordinates of the starting point of the accessibility map. Must be sent as [longitude, latitude]\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***scenario_id***&ensp;:&ensp;*string*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ID of the used scenario as loaded in Transition application.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_choice***&ensp;:&ensp;*string* \
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Specifies whether the used time is "Departure" or "Arrival".\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***departure_or_arrival_time***&ensp;:&ensp;*Time* \
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Departure or arrival time of the trip.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***n_polygons***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Number of polygons to be calculated\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***delta_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Baseline delta used for average accessibility map calculations.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***delta_interval_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Interval used between each calculation.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_total_travel_time_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum travel time, in minutes.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***min_waiting_time_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Minimum waiting time, in minutes.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_access_egress_travel_time_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum access time, in minutes.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_transfer_travel_time_minutes***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum transfer time, in minutes.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***max_first_waiting_time_minutes***&ensp;:&ensp;*bool*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Maximum wait time at first transit stop, in minutes.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***walking_speed_kmh***&ensp;:&ensp;*int*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Walking speed, in km/h\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***with_geojson***&ensp;:&ensp;*bool*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If True, the returned JSON file will contain geometry information for the strokes and polygons of the accessibility map.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***url***&ensp;:&ensp;*string*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;The server URL where the request is sent.\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;***token***&ensp;:&ensp;*string*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;The token used for user authentication.
+
+**Returns :**&emsp;&emsp;&ensp;***result*** : *JSON*\
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Accessibility map information in JSON format.
+
+**Raises :**&emsp;**&emsp;**&emsp;***RequestException***\
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If response code is not 200.
 
 ## Example
