@@ -24,6 +24,7 @@ import requests
 from datetime import time
 import json
 
+
 class Transition:
     def __init__(self, url, username, password, token=None):
         if url is None or url == "":
@@ -54,12 +55,9 @@ class Transition:
         if username is None or password is None:
             raise ValueError("Username or password empty.")
 
-        body = {
-            "usernameOrEmail": username,
-            "password": password
-        }
+        body = {"usernameOrEmail": username, "password": password}
 
-        return body            
+        return body
 
     def __build_headers(self):
         """Build the headers with required authorizations for all Transition api requests.
@@ -73,9 +71,7 @@ class Transition:
         if self.token is None or self.token == "":
             raise ValueError("Token not set.")
 
-        headers = {
-            "Authorization": f"Bearer {self.token}"
-        }
+        headers = {"Authorization": f"Bearer {self.token}"}
 
         return headers
 
@@ -138,20 +134,22 @@ class Transition:
         response.raise_for_status()
         return json.loads(response.text)
 
-    def request_routing_result(self,
-                               modes, 
-                               origin, 
-                               destination, 
-                               scenario_id, 
-                               departure_or_arrival_choice, 
-                               departure_or_arrival_time, 
-                               max_travel_time_minutes, 
-                               min_waiting_time_minutes,
-                               max_transfer_time_minutes, 
-                               max_access_time_minutes, 
-                               max_first_waiting_time_minutes, 
-                               with_geojson,
-                               with_alternatives):
+    def request_routing_result(
+        self,
+        modes,
+        origin,
+        destination,
+        scenario_id,
+        departure_or_arrival_choice,
+        departure_or_arrival_time,
+        max_travel_time_minutes,
+        min_waiting_time_minutes,
+        max_transfer_time_minutes,
+        max_access_time_minutes,
+        max_first_waiting_time_minutes,
+        with_geojson,
+        with_alternatives,
+    ):
         """Calculates a route between a given origin and destination with the provided modes of transport
 
         Args:
@@ -172,54 +170,66 @@ class Transition:
         Returns:
             JSON: Route for each transit mode in JSON format
         """
-        departure_or_arrival_time = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
-        departure_time = departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
-        arrival_time = departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
+        departure_or_arrival_time = (
+            departure_or_arrival_time.hour * 3600
+            + departure_or_arrival_time.minute * 60
+            + departure_or_arrival_time.second
+        )
+        departure_time = (
+            departure_or_arrival_time if departure_or_arrival_choice == "Departure" else None
+        )
+        arrival_time = (
+            departure_or_arrival_time if departure_or_arrival_choice == "Arrival" else None
+        )
 
         body = {
-            "routingModes" : modes,
-            "withAlternatives" : with_alternatives,
-            "departureTimeSecondsSinceMidnight" : departure_time,
-            "arrivalTimeSecondsSinceMidnight" : arrival_time,
-            "minWaitingTimeSeconds" : min_waiting_time_minutes * 60, 
-            "maxTransferTravelTimeSeconds" : max_transfer_time_minutes * 60,
-            "maxAccessEgressTravelTimeSeconds" : max_access_time_minutes * 60,
-            "maxFirstWaitingTimeSeconds" : max_first_waiting_time_minutes * 60,
-            "maxTotalTravelTimeSeconds" : max_travel_time_minutes * 60,
-            "scenarioId" : scenario_id,
-            "originGeojson" : {
+            "routingModes": modes,
+            "withAlternatives": with_alternatives,
+            "departureTimeSecondsSinceMidnight": departure_time,
+            "arrivalTimeSecondsSinceMidnight": arrival_time,
+            "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
+            "maxTransferTravelTimeSeconds": max_transfer_time_minutes * 60,
+            "maxAccessEgressTravelTimeSeconds": max_access_time_minutes * 60,
+            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60,
+            "maxTotalTravelTimeSeconds": max_travel_time_minutes * 60,
+            "scenarioId": scenario_id,
+            "originGeojson": {
                 "type": "Feature",
                 "id": 1,
-                "geometry": { "type": "Point", "coordinates": origin }
+                "geometry": {"type": "Point", "coordinates": origin},
             },
-            "destinationGeojson" : {
+            "destinationGeojson": {
                 "type": "Feature",
                 "id": 1,
-                "geometry": { "type": "Point", "coordinates": destination }
-            }
+                "geometry": {"type": "Point", "coordinates": destination},
+            },
         }
 
         headers = self.__build_headers()
         params = {"withGeojson": "true" if with_geojson else "false"}
-        response = requests.post(f"{self.base_url}/api/route", headers=headers, json=body, params=params)
+        response = requests.post(
+            f"{self.base_url}/api/route", headers=headers, json=body, params=params
+        )
         response.raise_for_status()
         return response.json()
 
-    def request_accessibility_map(self,
-                                  coordinates,
-                                  scenario_id, 
-                                  departure_or_arrival_choice,
-                                  departure_or_arrival_time: time,
-                                  n_polygons,
-                                  delta_minutes,
-                                  delta_interval_minutes,
-                                  max_total_travel_time_minutes,
-                                  min_waiting_time_minutes,
-                                  max_access_egress_travel_time_minutes,
-                                  max_transfer_travel_time_minutes,
-                                  max_first_waiting_time_minutes,
-                                  walking_speed_kmh,
-                                  with_geojson):
+    def request_accessibility_map(
+        self,
+        coordinates,
+        scenario_id,
+        departure_or_arrival_choice,
+        departure_or_arrival_time,
+        n_polygons,
+        delta_minutes,
+        delta_interval_minutes,
+        max_total_travel_time_minutes,
+        min_waiting_time_minutes,
+        max_access_egress_travel_time_minutes,
+        max_transfer_travel_time_minutes,
+        max_first_waiting_time_minutes,
+        walking_speed_kmh,
+        with_geojson,
+    ):
         """Calculates an accessibility map from a given origin
 
         Args:
@@ -241,9 +251,22 @@ class Transition:
         Returns:
             JSON: Accessibility map information in JSON format
         """
-        departure_or_arrival_time_seconds_from_midnight = departure_or_arrival_time.hour * 3600 + departure_or_arrival_time.minute * 60 + departure_or_arrival_time.second
-        departure_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Departure" else None
-        arrival_time_seconds = departure_or_arrival_time_seconds_from_midnight if departure_or_arrival_choice == "Arrival" else None
+        departure_or_arrival_time_seconds_from_midnight = (
+            departure_or_arrival_time.hour * 3600
+            + departure_or_arrival_time.minute * 60
+            + departure_or_arrival_time.second
+        )
+        departure_time_seconds = (
+            departure_or_arrival_time_seconds_from_midnight
+            if departure_or_arrival_choice == "Departure"
+            else None
+        )
+        arrival_time_seconds = (
+            departure_or_arrival_time_seconds_from_midnight
+            if departure_or_arrival_choice == "Arrival"
+            else None
+        )
+
         body = {
             "departureTimeSecondsSinceMidnight": departure_time_seconds,
             "arrivalTimeSecondsSinceMidnight": arrival_time_seconds,
@@ -253,21 +276,22 @@ class Transition:
             "minWaitingTimeSeconds": min_waiting_time_minutes * 60,
             "maxTransferTravelTimeSeconds": max_transfer_travel_time_minutes * 60,
             "maxAccessEgressTravelTimeSeconds": max_access_egress_travel_time_minutes * 60,
-            "maxFirstWaitingTimeSeconds": max_first_waiting_time_minutes * 60 if max_first_waiting_time_minutes else None,
-            "walkingSpeedMps": walking_speed_kmh * (1000/3600),
+            "maxFirstWaitingTimeSeconds": (
+                max_first_waiting_time_minutes * 60 if max_first_waiting_time_minutes else None
+            ),
+            "walkingSpeedMps": walking_speed_kmh * (1000 / 3600),
             "maxTotalTravelTimeSeconds": max_total_travel_time_minutes * 60,
             "locationGeojson": {
                 "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": coordinates
-                }
+                "geometry": {"type": "Point", "coordinates": coordinates},
             },
-        "scenarioId": scenario_id
+            "scenarioId": scenario_id,
         }
 
         headers = self.__build_headers()
-        params = {'withGeojson': 'true' if with_geojson else 'false'}
-        response = requests.post(f"{self.base_url}/api/accessibility", headers=headers, json=body, params=params)
+        params = {"withGeojson": "true" if with_geojson else "false"}
+        response = requests.post(
+            f"{self.base_url}/api/accessibility", headers=headers, json=body, params=params
+        )
         response.raise_for_status()
         return response.json()
