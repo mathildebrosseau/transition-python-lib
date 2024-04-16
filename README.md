@@ -1,11 +1,9 @@
-<!-- The fact that the library and the app have the same names is confusing.. -->
-# Transition
+# pyTransition
 pyTransition is a Python package designed to interact with the public API of the transit planning application Transition. It allows users to retrieve and request geographic and routing data from the app.\
 The documentation for the Transition public API used by this library can be found [here](https://mathildebrosseau.github.io/transition-api/)
 
-## Install and import Transition
+## Install and import pyTransition
 To install pyTransition, use the following command :
-<!-- -[//]:#(probably something like pip install transition)- -->
 ```
 pip install pyTransition
 ```
