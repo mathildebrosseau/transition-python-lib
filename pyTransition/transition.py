@@ -97,7 +97,7 @@ class Transition:
             geojson: Transition paths as a GeoJSON LineString FeatureCollection object
         """
         headers = self.__build_headers()
-        response = requests.get(f"{self.base_url}/api/paths", headers=headers)
+        response = requests.get(f"{self.base_url}/api/v1/paths", headers=headers)
         response.raise_for_status()
         return response.json()
 
@@ -108,7 +108,7 @@ class Transition:
             geojson: Transition nodes as a GeoJSON Point FeatureCollection object
         """
         headers = self.__build_headers()
-        response = requests.get(f"{self.base_url}/api/nodes", headers=headers)
+        response = requests.get(f"{self.base_url}/api/v1/nodes", headers=headers)
         response.raise_for_status()
         return response.json()
 
@@ -119,7 +119,7 @@ class Transition:
             List: List of Transition scenarios with their parameters
         """
         headers = self.__build_headers()
-        response = requests.get(f"{self.base_url}/api/scenarios", headers=headers)
+        response = requests.get(f"{self.base_url}/api/v1/scenarios", headers=headers)
         response.raise_for_status()
         return response.json()
 
@@ -130,7 +130,7 @@ class Transition:
             List: List of routing modes as a list of strings
         """
         headers = self.__build_headers()
-        response = requests.get(f"{self.base_url}/api/routing-modes", headers=headers)
+        response = requests.get(f"{self.base_url}/api/v1/routing-modes", headers=headers)
         response.raise_for_status()
         return json.loads(response.text)
 
@@ -208,7 +208,7 @@ class Transition:
         headers = self.__build_headers()
         params = {"withGeojson": "true" if with_geojson else "false"}
         response = requests.post(
-            f"{self.base_url}/api/route", headers=headers, json=body, params=params
+            f"{self.base_url}/api/v1/route", headers=headers, json=body, params=params
         )
         response.raise_for_status()
         return response.json()
@@ -291,7 +291,7 @@ class Transition:
         headers = self.__build_headers()
         params = {"withGeojson": "true" if with_geojson else "false"}
         response = requests.post(
-            f"{self.base_url}/api/accessibility", headers=headers, json=body, params=params
+            f"{self.base_url}/api/v1/accessibility", headers=headers, json=body, params=params
         )
         response.raise_for_status()
         return response.json()

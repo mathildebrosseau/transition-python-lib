@@ -117,14 +117,14 @@ class TestTransition(unittest.TestCase):
 
     def test_get_paths(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/paths", json={"key": "value"}, status_code=200)
+            m.get(f"{self.test_url}/api/v1/paths", json={"key": "value"}, status_code=200)
             res = self.test_transition_instance.get_paths()
             self.assertTrue(m.called_once)
             self.assertEqual(res, {"key": "value"})
 
     def test_get_paths_error(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/paths", json={"key": "value"}, status_code=400)
+            m.get(f"{self.test_url}/api/v1/paths", json={"key": "value"}, status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError, self.test_transition_instance.get_paths
             )
@@ -132,14 +132,14 @@ class TestTransition(unittest.TestCase):
 
     def test_get_nodes(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/nodes", json={"key": "value"}, status_code=200)
+            m.get(f"{self.test_url}/api/v1/nodes", json={"key": "value"}, status_code=200)
             res = self.test_transition_instance.get_nodes()
             self.assertTrue(m.called_once)
             self.assertEqual(res, {"key": "value"})
 
     def test_get_nodes_error(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/nodes", json={"key": "value"}, status_code=400)
+            m.get(f"{self.test_url}/api/v1/nodes", json={"key": "value"}, status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError, self.test_transition_instance.get_nodes
             )
@@ -147,14 +147,14 @@ class TestTransition(unittest.TestCase):
 
     def test_get_scenarios(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/scenarios", json={"key": "value"}, status_code=200)
+            m.get(f"{self.test_url}/api/v1/scenarios", json={"key": "value"}, status_code=200)
             res = self.test_transition_instance.get_scenarios()
             self.assertTrue(m.called_once)
             self.assertEqual(res, {"key": "value"})
 
     def test_get_scenarios_error(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/scenarios", json={"key": "value"}, status_code=400)
+            m.get(f"{self.test_url}/api/v1/scenarios", json={"key": "value"}, status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError, self.test_transition_instance.get_scenarios
             )
@@ -162,14 +162,14 @@ class TestTransition(unittest.TestCase):
 
     def test_get_routing_modes(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/routing-modes", text='["mode1","mode2"]', status_code=200)
+            m.get(f"{self.test_url}/api/v1/routing-modes", text='["mode1","mode2"]', status_code=200)
             modes = self.test_transition_instance.get_routing_modes()
             self.assertTrue(m.called_once)
             self.assertEqual(modes, ["mode1", "mode2"])
 
     def test_get_routing_modes_error(self):
         with requests_mock.Mocker() as m:
-            m.get(f"{self.test_url}/api/routing-modes", text='["mode1","mode2"]', status_code=400)
+            m.get(f"{self.test_url}/api/v1/routing-modes", text='["mode1","mode2"]', status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError, self.test_transition_instance.get_routing_modes
             )
@@ -177,7 +177,7 @@ class TestTransition(unittest.TestCase):
 
     def test_request_accessibility_map(self):
         with requests_mock.Mocker() as m:
-            m.post(f"{self.test_url}/api/accessibility", json={"key": "value"}, status_code=200)
+            m.post(f"{self.test_url}/api/v1/accessibility", json={"key": "value"}, status_code=200)
             res = self.test_transition_instance.request_accessibility_map(
                 coordinates=[0, 0],
                 scenario_id="scenario-id",
@@ -200,7 +200,7 @@ class TestTransition(unittest.TestCase):
 
     def test_request_accessibility_map_error(self):
         with requests_mock.Mocker() as m:
-            m.post(f"{self.test_url}/api/accessibility", json={"key": "value"}, status_code=400)
+            m.post(f"{self.test_url}/api/v1/accessibility", json={"key": "value"}, status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError,
                 self.test_transition_instance.request_accessibility_map,
@@ -224,7 +224,7 @@ class TestTransition(unittest.TestCase):
 
     def test_request_routing_result(self):
         with requests_mock.Mocker() as m:
-            m.post(f"{self.test_url}/api/route", json={"key": "value"}, status_code=200)
+            m.post(f"{self.test_url}/api/v1/route", json={"key": "value"}, status_code=200)
             res = self.test_transition_instance.request_routing_result(
                 modes=["mode1", "mode2"],
                 origin=[0, 0],
@@ -246,7 +246,7 @@ class TestTransition(unittest.TestCase):
 
     def test_request_routing_result_error(self):
         with requests_mock.Mocker() as m:
-            m.post(f"{self.test_url}/api/route", json={"key": "value"}, status_code=400)
+            m.post(f"{self.test_url}/api/v1/route", json={"key": "value"}, status_code=400)
             self.assertRaises(
                 requests.exceptions.HTTPError,
                 self.test_transition_instance.request_routing_result,
