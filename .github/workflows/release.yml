@@ -3,7 +3,7 @@ name: Release Transition-Python-Lib to TestPyPI
 on:
   push:
     branches:
-      - deploy-subfolder-test
+      - subfolder-deploy
 
 jobs:
   release:
@@ -23,12 +23,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel twine pytest
 
-      - name: Build, test and upload package to TestPyPI
+      - name: Run tests
+        run: |
+          cd pyTransition_lib
+          pytest tests/
+
+      - name: Build and upload package to TestPyPI
         env:
           TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
             cd pyTransition_lib
             python setup.py sdist bdist_wheel
-            pytest tests/
             twine upload --repository testpypi dist/*
